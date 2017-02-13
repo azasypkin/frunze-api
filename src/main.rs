@@ -13,14 +13,18 @@ extern crate serde;
 extern crate serde_derive;
 #[macro_use]
 extern crate serde_json;
+extern crate unicase;
 
 mod core;
 
 use docopt::Docopt;
 
+use iron::method::Method;
+use iron::headers;
 use iron::prelude::*;
 use iron::status;
 use router::Router;
+use unicase::UniCase;
 
 const USAGE: &'static str = "
 Usage: frunze_api [--verbose] [--ip=<address>] [--port=<port>]
@@ -76,7 +80,18 @@ fn get_control_groups_handler(_: &mut Request) -> IronResult<Response> {
         }]
     }];
 
-    Ok(Response::with((content_type, status::Ok, serde_json::to_string(&fake_response).unwrap())))
+    let mut response = Response::with((content_type, status::Ok,
+                                   serde_json::to_string(&fake_response).unwrap()));
+
+    // Add required CORS headers, we should be more strict here in production obviously.
+    response.headers.set(headers::AccessControlAllowOrigin::Any);
+    response.headers.set(headers::AccessControlAllowHeaders(
+        vec![UniCase(String::from("accept")), UniCase(String::from("content-type"))]
+    ));
+    response.headers.set(headers::AccessControlAllowMethods(
+        vec![Method::Get, Method::Post, Method::Put, Method::Delete]));
+
+    Ok(response)
 }
 
 fn main() {
