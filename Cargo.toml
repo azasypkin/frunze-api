@@ -10,6 +10,9 @@ iron = "0.5.1"
 log = "0.3.6"
 router = "0.5.1"
 rustc-serialize = "0.3.22"
+serde = "0.9.10"
+serde_derive = "0.9.10"
+serde_json = "0.9.8"
 
 [dev-dependencies]
 stainless = "*"
