@@ -17,6 +17,7 @@ unicase = "1.4.0"
 
 [dev-dependencies]
 stainless = "0.1.10"
+rustfmt = "0.8.0"
 
 [features]
 default = []
