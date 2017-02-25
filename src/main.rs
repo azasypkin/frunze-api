@@ -53,44 +53,7 @@ fn handler(req: &mut Request) -> IronResult<Response> {
     Ok(Response::with((status::Ok, *query)))
 }
 
-fn get_control_groups_handler(_: &mut Request) -> IronResult<Response> {
-    let content_type = "application/json".parse::<iron::mime::Mime>().unwrap();
-
-    let fake_response = vec![core::control_group::ControlGroup {
-                                 type_name: "group#1".to_owned(),
-                                 name: "Group #1".to_owned(),
-                                 description: "Group #1 Description".to_owned(),
-                                 items: vec![core::control_metadata::ControlMetadata {
-                                                 type_name: "type#11".to_owned(),
-                                                 name: "Item #11".to_owned(),
-                                                 description: "Item #11 Description".to_owned(),
-                                             },
-                                             core::control_metadata::ControlMetadata {
-                                                 type_name: "type#12".to_owned(),
-                                                 name: "Item #12".to_owned(),
-                                                 description: "Item #12 Description".to_owned(),
-                                             }],
-                             },
-                             core::control_group::ControlGroup {
-                                 type_name: "group#2".to_owned(),
-                                 name: "Group #2".to_owned(),
-                                 description: "Group #2 Description".to_owned(),
-                                 items: vec![core::control_metadata::ControlMetadata {
-                                                 type_name: "type#21".to_owned(),
-                                                 name: "Item #21".to_owned(),
-                                                 description: "Item #21 Description".to_owned(),
-                                             },
-                                             core::control_metadata::ControlMetadata {
-                                                 type_name: "type#22".to_owned(),
-                                                 name: "Item #22".to_owned(),
-                                                 description: "Item #22 Description".to_owned(),
-                                             }],
-                             }];
-
-    let mut response =
-        Response::with((content_type, status::Ok, serde_json::to_string(&fake_response).unwrap()));
-
-    // Add required CORS headers, we should be more strict here in production obviously.
+fn add_cors_headers(response: &mut Response) {
     response.headers.set(headers::AccessControlAllowOrigin::Any);
     response.headers.set(headers::AccessControlAllowHeaders(
         vec![UniCase(String::from("accept")), UniCase(String::from("content-type"))]
@@ -99,6 +62,47 @@ fn get_control_groups_handler(_: &mut Request) -> IronResult<Response> {
                                                                  Method::Post,
                                                                  Method::Put,
                                                                  Method::Delete]));
+}
+
+fn get_control_groups_handler(_: &mut Request) -> IronResult<Response> {
+    let content_type = "application/json".parse::<iron::mime::Mime>().unwrap();
+
+    let fake_response = vec![core::control_group::ControlGroup {
+                                 type_name: "group#1".to_string(),
+                                 name: "Group #1".to_string(),
+                                 description: "Group #1 Description".to_string(),
+                                 items: vec![core::control_metadata::ControlMetadata {
+                                                 type_name: "type#11".to_string(),
+                                                 name: "Item #11".to_string(),
+                                                 description: "Item #11 Description".to_string(),
+                                             },
+                                             core::control_metadata::ControlMetadata {
+                                                 type_name: "type#12".to_string(),
+                                                 name: "Item #12".to_string(),
+                                                 description: "Item #12 Description".to_string(),
+                                             }],
+                             },
+                             core::control_group::ControlGroup {
+                                 type_name: "group#2".to_string(),
+                                 name: "Group #2".to_string(),
+                                 description: "Group #2 Description".to_string(),
+                                 items: vec![core::control_metadata::ControlMetadata {
+                                                 type_name: "type#21".to_string(),
+                                                 name: "Item #21".to_string(),
+                                                 description: "Item #21 Description".to_string(),
+                                             },
+                                             core::control_metadata::ControlMetadata {
+                                                 type_name: "type#22".to_string(),
+                                                 name: "Item #22".to_string(),
+                                                 description: "Item #22 Description".to_string(),
+                                             }],
+                             }];
+
+    let mut response =
+        Response::with((content_type, status::Ok, serde_json::to_string(&fake_response).unwrap()));
+
+    // Add required CORS headers, we should be more strict here in production obviously.
+    add_cors_headers(&mut response);
 
     Ok(response)
 }
@@ -115,7 +119,7 @@ fn main() {
                get_control_groups_handler,
                "control-groups");
 
-    let ip = args.flag_ip.unwrap_or("0.0.0.0".to_owned());
+    let ip = args.flag_ip.unwrap_or("0.0.0.0".to_string());
     let port = args.flag_port.unwrap_or(8009);
 
     info!("Running server at {}:{}", ip, port);
