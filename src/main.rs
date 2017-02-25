@@ -1,5 +1,7 @@
 #![cfg_attr(feature = "stainless", feature(plugin))]
 #![cfg_attr(test, plugin(stainless))]
+#![cfg_attr(feature="clippy", feature(plugin))]
+#![cfg_attr(feature="clippy", plugin(clippy))]
 
 extern crate docopt;
 extern crate env_logger;
@@ -11,7 +13,6 @@ extern crate rustc_serialize;
 extern crate serde;
 #[macro_use]
 extern crate serde_derive;
-#[macro_use]
 extern crate serde_json;
 extern crate unicase;
 
@@ -45,12 +46,12 @@ struct Args {
 }
 
 fn handler(req: &mut Request) -> IronResult<Response> {
-    let ref query = req.extensions
+    let query_option = req.extensions
         .get::<Router>()
         .unwrap()
-        .find("query")
-        .unwrap_or("/");
-    Ok(Response::with((status::Ok, *query)))
+        .find("query");
+
+    Ok(Response::with((status::Ok, query_option.unwrap_or("/"))))
 }
 
 fn add_cors_headers(response: &mut Response) {
@@ -119,7 +120,7 @@ fn main() {
                get_control_groups_handler,
                "control-groups");
 
-    let ip = args.flag_ip.unwrap_or("0.0.0.0".to_string());
+    let ip = args.flag_ip.unwrap_or_else(|| "0.0.0.0".to_string());
     let port = args.flag_port.unwrap_or(8009);
 
     info!("Running server at {}:{}", ip, port);
