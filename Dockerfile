@@ -1,6 +1,9 @@
 # Create image based on the official Node 6 image from dockerhub.
 FROM azasypkin/rust-stable:latest
 
+# backtrace-sys crate requires these dependencies.
+RUN pacman -S --noconfirm gawk grep sed
+
 # Create a directory where the app will be placed
 RUN mkdir -p /usr/src/api
 
