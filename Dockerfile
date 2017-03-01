@@ -20,4 +20,4 @@ RUN cargo build
 EXPOSE 8009
 
 # Serve the api.
-CMD ["cargo", "run"]
+CMD ["cargo", "run", "--", "--db-ip", "db"]
