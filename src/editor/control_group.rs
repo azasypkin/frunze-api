@@ -1,4 +1,4 @@
-use core::control_metadata::ControlMetadata;
+use editor::control_metadata::ControlMetadata;
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct ControlGroup {

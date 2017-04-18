@@ -24,7 +24,8 @@ extern crate unicase;
 extern crate error_chain;
 
 mod errors;
-mod core;
+mod editor;
+mod project;
 mod db;
 
 use db::DB;
@@ -75,12 +76,13 @@ fn add_cors_headers(response: &mut Response) {
                                                                  Method::Delete]));
 }
 
-fn handler(request: &mut Request, database: &DB) -> IronResult<Response> {
+fn json_handler<F, T: Sized>(request: &mut Request, content_retriever: F) -> IronResult<Response>
+    where F: FnOnce() -> Result<T>, T: serde::Serialize {
     info!("Request received: {}", request.url);
     /*let query_option = req.extensions.get::<Router>().unwrap().find("query");*/
     let content_type = mime::Mime(mime::TopLevel::Application, mime::SubLevel::Json,
                                   vec![(mime::Attr::Charset, mime::Value::Utf8)]);
-    let response_body = serde_json::to_string(&database.get_control_groups()?)
+    let response_body = serde_json::to_string(&content_retriever()?)
         .map_err(|e| -> Error { e.into() })?;
 
     let mut response = Response::with((content_type, status::Ok, response_body));
@@ -105,8 +107,20 @@ fn main() {
     database.connect(&db_ip, db_port).expect("Failed to connect to the database.");
 
     let mut router = Router::new();
-    router.get("/control-groups", move |request: &mut Request| handler(request, &database),
+    let db = database.clone();
+    router.get("/control-groups",
+               move |request: &mut Request| json_handler(request, || db.get_control_groups()),
                "control-groups");
+
+    let db = database.clone();
+    router.get("/project-kinds",
+               move |request: &mut Request| json_handler(request, || db.get_project_kinds()),
+               "project-kinds");
+
+    let db = database.clone();
+    router.get("/project-capabilities",
+               move |request: &mut Request| json_handler(request, || db.get_project_capabilities()),
+               "project-capabilities");
 
     let ip = args.flag_ip.unwrap_or_else(|| "0.0.0.0".to_string());
     let port = args.flag_port.unwrap_or(8009);
