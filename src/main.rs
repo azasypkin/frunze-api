@@ -113,11 +113,6 @@ fn main() {
                "control-groups");
 
     let db = database.clone();
-    router.get("/project-kinds",
-               move |request: &mut Request| json_handler(request, || db.get_project_kinds()),
-               "project-kinds");
-
-    let db = database.clone();
     router.get("/project-capabilities",
                move |request: &mut Request| json_handler(request, || db.get_project_capabilities()),
                "project-capabilities");
