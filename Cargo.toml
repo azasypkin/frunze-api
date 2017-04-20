@@ -4,24 +4,24 @@ version = "0.1.0"
 authors = ["Aleh Zasypkin <aleh.zasypkin@gmail.com>"]
 
 [dependencies]
-bson = "0.4.4"
+bson = "0.6.1"
 docopt = "0.7.0"
 env_logger = "0.4.2"
 error-chain = "0.10.0"
 iron = "0.5.1"
 log = "0.3.7"
-mongodb = "0.2.3"
+mongodb = "0.2.6"
 router = "0.5.1"
 rustc-serialize = "0.3.23"
-serde = "0.9.11"
-serde_derive = "0.9.11"
-serde_json = "0.9.9"
+serde = "0.9.14"
+serde_derive = "0.9.14"
+serde_json = "0.9.10"
 unicase = "1.4.0"
 
 [dev-dependencies]
 stainless = "0.1.11"
-rustfmt = "0.8.0"
-clippy = "0.0.121"
+rustfmt = "0.8.3"
+clippy = "0.0.125"
 
 [features]
 default = []
