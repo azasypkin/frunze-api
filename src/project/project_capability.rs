@@ -3,5 +3,5 @@ pub struct ProjectCapability {
     #[serde(rename(serialize = "type", deserialize = "type"))]
     pub type_name: String,
     pub name: String,
-    pub hint: String,
+    pub description: String,
 }
