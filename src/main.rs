@@ -117,6 +117,17 @@ fn main() {
                move |request: &mut Request| json_handler(request, || db.get_project_capabilities()),
                "project-capabilities");
 
+    let db = database.clone();
+    router.get("/project-capability-groups",
+               move |request: &mut Request| json_handler(request,
+                                                         || db.get_project_capability_groups()),
+               "project-capability-groups");
+
+    let db = database.clone();
+    router.get("/project-platforms",
+               move |request: &mut Request| json_handler(request, || db.get_project_platforms()),
+               "project-platforms");
+
     let ip = args.flag_ip.unwrap_or_else(|| "0.0.0.0".to_string());
     let port = args.flag_port.unwrap_or(8009);
 

@@ -1,5 +1,5 @@
 #[derive(Serialize, Deserialize, Debug)]
-pub struct ProjectCapabilityGroup {
+pub struct ProjectPlatform {
     #[serde(rename(serialize = "type", deserialize = "type"))]
     pub type_name: String,
     pub name: String,
