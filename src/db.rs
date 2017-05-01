@@ -207,16 +207,16 @@ impl DB {
             name: "Air Pollution Sensor".to_string(),
             description: "Allows your device to measure air pollution level.".to_string()
         }, ProjectCapability {
-            type_name: "motor".to_string(),
+            type_name: "dc-motor".to_string(),
             name: "DC Motor".to_string(),
             description: "Allows your device to spin a DC motor.".to_string()
         }, ProjectCapability {
-            type_name: "servo".to_string(),
+            type_name: "servo-motor".to_string(),
             name: "Servo Motor".to_string(),
             description: "Allows your device to control a servo motor.".to_string()
         }, ProjectCapability {
-            type_name: "vibrator".to_string(),
-            name: "Vibrator".to_string(),
+            type_name: "vibration-motor".to_string(),
+            name: "Vibration motor".to_string(),
             description: "Allows your device to vibrate.".to_string()
         }, ProjectCapability {
             type_name: "momentary-switch".to_string(),
@@ -228,9 +228,9 @@ impl DB {
             description: "Allows your device to have a mechanical switch with a maintained state."
                 .to_string()
         }, ProjectCapability {
-            type_name: "slide-switch".to_string(),
-            name: "Slide Switch".to_string(),
-            description: "Allows your device to have a slide switch.".to_string()
+            type_name: "rotary-switch".to_string(),
+            name: "Rotary Switch".to_string(),
+            description: "Allows your device to have a rotary switch.".to_string()
         }];
 
         project_capabilities
@@ -264,14 +264,15 @@ impl DB {
             name: "Mechanical".to_string(),
             description: "Items in this group allows your device to perform mechanical \
                 actions.".to_string(),
-            capabilities: vec!["motor".to_string(), "servo".to_string(), "vibrator".to_string()]
+            capabilities: vec!["dc-motor".to_string(), "servo-motor".to_string(),
+                               "vibration-motor".to_string()]
         }, ProjectCapabilityGroup {
             type_name: "switches".to_string(),
             name: "Switches".to_string(),
             description: "Items in this group allows your device to have various switches."
                 .to_string(),
             capabilities: vec!["momentary-switch".to_string(), "maintained-switch".to_string(),
-                               "slide-switch".to_string()]
+                               "rotary-switch".to_string()]
         }];
 
         project_capability_groups
@@ -286,7 +287,7 @@ impl DB {
                                "light".to_string(), "humidity".to_string(), "motion".to_string(),
                                "temperature".to_string(), "magnetic".to_string(),
                                "momentary-switch".to_string(), "maintained-switch".to_string(),
-                               "slide-switch".to_string()]
+                               "rotary-switch".to_string()]
         }, ProjectPlatform {
             type_name: "raspberry-pi-zero-w".to_string(),
             name: "The Raspberry Pi Zero W".to_string(),
@@ -296,7 +297,7 @@ impl DB {
                                "light".to_string(), "humidity".to_string(), "motion".to_string(),
                                "temperature".to_string(), "magnetic".to_string(),
                                "momentary-switch".to_string(), "maintained-switch".to_string(),
-                               "slide-switch".to_string()]
+                               "rotary-switch".to_string()]
         }];
 
         project_platforms
