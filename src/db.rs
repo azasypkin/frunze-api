@@ -294,40 +294,40 @@ impl DB {
             description: "The Raspberry Pi Zero W Microcomputer.".to_string(),
             capabilities: vec!["uart".to_string(), "wifi".to_string(), "bluetooth".to_string(),
                                "led".to_string(), "speaker".to_string(), "beeper".to_string(),
-                               "light".to_string(), "humidity".to_string(), "motion".to_string(),
-                               "temperature".to_string(), "magnetic".to_string(),
-                               "momentary-switch".to_string(), "maintained-switch".to_string(),
-                               "rotary-switch".to_string()]
+                               "mic".to_string(), "light".to_string(), "humidity".to_string(),
+                               "motion".to_string(), "temperature".to_string(),
+                               "magnetic".to_string(), "momentary-switch".to_string(),
+                               "maintained-switch".to_string(), "rotary-switch".to_string()]
         }, ProjectPlatform {
             type_name: "raspberry-pi-3".to_string(),
             name: "The Raspberry Pi 3".to_string(),
             description: "The Raspberry Pi 3 Microcomputer.".to_string(),
             capabilities: vec!["uart".to_string(), "wifi".to_string(), "bluetooth".to_string(),
                                "led".to_string(), "speaker".to_string(), "beeper".to_string(),
-                               "light".to_string(), "humidity".to_string(), "motion".to_string(),
-                               "temperature".to_string(), "magnetic".to_string(),
-                               "momentary-switch".to_string(), "maintained-switch".to_string(),
-                               "rotary-switch".to_string()]
+                               "mic".to_string(), "light".to_string(), "humidity".to_string(),
+                               "motion".to_string(), "temperature".to_string(),
+                               "magnetic".to_string(), "momentary-switch".to_string(),
+                               "maintained-switch".to_string(), "rotary-switch".to_string()]
         }, ProjectPlatform {
             type_name: "psf-a85".to_string(),
             name: "PSF-A85 WiFi Module".to_string(),
             description: "PSF-A85 Wireless Module from iTEAD.".to_string(),
             capabilities: vec!["uart".to_string(), "wifi".to_string(), "bluetooth".to_string(),
                                "led".to_string(), "speaker".to_string(), "beeper".to_string(),
-                               "light".to_string(), "humidity".to_string(), "motion".to_string(),
-                               "temperature".to_string(), "magnetic".to_string(),
-                               "momentary-switch".to_string(), "maintained-switch".to_string(),
-                               "rotary-switch".to_string()]
+                               "mic".to_string(), "light".to_string(), "humidity".to_string(),
+                               "motion".to_string(), "temperature".to_string(),
+                               "magnetic".to_string(), "momentary-switch".to_string(),
+                               "maintained-switch".to_string(), "rotary-switch".to_string()]
         }, ProjectPlatform {
             type_name: "tessel-2".to_string(),
             name: "Tessel 2".to_string(),
             description: "The Tessel 2 development board.".to_string(),
             capabilities: vec!["uart".to_string(), "wifi".to_string(), "bluetooth".to_string(),
                                "led".to_string(), "speaker".to_string(), "beeper".to_string(),
-                               "light".to_string(), "humidity".to_string(), "motion".to_string(),
-                               "temperature".to_string(), "magnetic".to_string(),
-                               "momentary-switch".to_string(), "maintained-switch".to_string(),
-                               "rotary-switch".to_string()]
+                               "mic".to_string(), "light".to_string(), "humidity".to_string(),
+                               "motion".to_string(), "temperature".to_string(),
+                               "magnetic".to_string(), "momentary-switch".to_string(),
+                               "maintained-switch".to_string(), "rotary-switch".to_string()]
         }];
 
         project_platforms
