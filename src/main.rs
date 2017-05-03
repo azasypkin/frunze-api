@@ -5,6 +5,7 @@
 
 #![recursion_limit = "1024"]
 
+#[macro_use(bson, doc)]
 extern crate bson;
 extern crate mongodb;
 
@@ -111,6 +112,15 @@ fn main() {
     router.get("/control-groups",
                move |request: &mut Request| json_handler(request, || db.get_control_groups()),
                "control-groups");
+
+    let db = database.clone();
+    router.get("/project/:id",
+               move |request: &mut Request| {
+                   let project_id = request.extensions.get::<Router>().unwrap().find("id").unwrap()
+                       .to_owned();
+                   json_handler(request, || db.get_project(&project_id))
+               },
+               "project");
 
     let db = database.clone();
     router.get("/project-capabilities",

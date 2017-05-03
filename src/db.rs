@@ -7,6 +7,7 @@ use serde;
 
 use editor::control_group::ControlGroup;
 use editor::control_metadata::ControlMetadata;
+use project::project::Project;
 use project::project_capability_group::ProjectCapabilityGroup;
 use project::project_capability::ProjectCapability;
 use project::project_platform::ProjectPlatform;
@@ -32,6 +33,20 @@ impl DB {
         self.fill_db_if_empty()?;
 
         Ok(())
+    }
+
+    /// Queries project instance from the database using passed `project_id`.
+    pub fn get_project(&self, project_id: &str) -> Result<Option<Project>> {
+        let db = self.client.as_ref().unwrap().db(&self.name);
+
+        let result = db.collection("projects").find_one(Some(doc! { "id" => project_id }), None)?;
+        let result = if let Some(project) = result {
+            Some(bson::from_bson(bson::Bson::Document(project))?)
+        } else {
+            None
+        };
+
+        Ok(result)
     }
 
     /// Queries control groups from the database.
