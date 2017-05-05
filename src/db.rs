@@ -49,6 +49,18 @@ impl DB {
         Ok(result)
     }
 
+    /// Saves project to the database.
+    pub fn save_project(&self, project: &Project) -> Result<()>{
+        let db = self.client.as_ref().unwrap().db(&self.name);
+
+        let collection = db.collection("projects");
+        if let Bson::Document(document) = bson::to_bson(&project)? {
+            collection.insert_one(document, None)?;
+        }
+
+        Ok(())
+    }
+
     /// Queries control groups from the database.
     pub fn get_control_groups(&self) -> Result<Vec<ControlGroup>> {
         self.get_collection("groups")
