@@ -29,7 +29,7 @@ extern crate uuid;
 mod middleware;
 mod errors;
 mod editor;
-mod project;
+mod projects;
 mod db;
 
 use std::io::Read;
@@ -99,7 +99,7 @@ fn setup_routes(database: DB) -> Router {
         let mut payload = String::new();
         itry!(request.body.read_to_string(&mut payload));
 
-        let mut project: project::project::Project = itry!(serde_json::from_str(&payload));
+        let mut project: projects::project::Project = itry!(serde_json::from_str(&payload));
 
         // FIXME: Right now we have only POST method implemented, but later on this method should be
         // used only for new projects, if we receive project with non-empty ID we should throw and

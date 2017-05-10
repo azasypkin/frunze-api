@@ -7,10 +7,10 @@ use serde;
 
 use editor::control_group::ControlGroup;
 use editor::control_metadata::ControlMetadata;
-use project::project::Project;
-use project::project_capability_group::ProjectCapabilityGroup;
-use project::project_capability::ProjectCapability;
-use project::project_platform::ProjectPlatform;
+use projects::project::Project;
+use projects::project_capability_group::ProjectCapabilityGroup;
+use projects::project_capability::ProjectCapability;
+use projects::project_platform::ProjectPlatform;
 
 #[derive(Clone)]
 pub struct DB {
