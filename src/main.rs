@@ -80,7 +80,7 @@ fn json_handler<F, T: Sized>(request: &mut Request, content_retriever: F) -> Iro
     Ok(Response::with((content_type, status::Ok, response_body)))
 }
 
-fn setup_routes(database: DB) -> Router {
+fn setup_routes(database: &DB) -> Router {
     let mut router = Router::new();
 
     let db = database.clone();
@@ -149,7 +149,7 @@ fn main() {
     let port = args.flag_port.unwrap_or(8009);
 
     let mut mount = Mount::new();
-    mount.mount("/", setup_routes(database));
+    mount.mount("/", setup_routes(&database));
 
     let mut chain = Chain::new(mount);
     chain.link_after(middleware::cors::CORSMiddleware);
