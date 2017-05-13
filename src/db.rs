@@ -126,30 +126,59 @@ impl DB {
     // TODO: Below are temporary methods that will be replaced by the pre-loaded DB files.
     fn generate_control_groups(&self) -> Vec<ControlGroup> {
         let control_groups = vec![ControlGroup {
-            type_name: "group#1".to_string(),
-            name: "Group #1".to_string(),
-            description: "Group #1 Description".to_string(),
+            type_name: "hardware-connection".to_string(),
+            name: "Hardware - Connection".to_string(),
+            description: "All applicable connection related hardware components.".to_string(),
             items: vec![ControlMetadata {
-                type_name: "type#11".to_string(),
-                name: "Item #11".to_string(),
-                description: "Item #11 Description".to_string(),
+                type_name: "hardware-connection-wifi".to_string(),
+                name: "WiFi Connection".to_string(),
+                description: "Enables WiFi connectivity.".to_string(),
             }, ControlMetadata {
-                type_name: "type#12".to_string(),
-                name: "Item #12".to_string(),
-                description: "Item #12 Description".to_string(),
+                type_name: "hardware-connection-uart".to_string(),
+                name: "UART Connection".to_string(),
+                description: "Enables UART connectivity.".to_string(),
             }],
         }, ControlGroup {
-            type_name: "group#2".to_string(),
-            name: "Group #2".to_string(),
-            description: "Group #2 Description".to_string(),
+            type_name: "hardware-audio".to_string(),
+            name: "Hardware - Audio".to_string(),
+            description: "All applicable audio related hardware components.".to_string(),
             items: vec![ControlMetadata {
-                type_name: "type#21".to_string(),
-                name: "Item #21".to_string(),
-                description: "Item #21 Description".to_string(),
+                type_name: "hardware-audio-speaker".to_string(),
+                name: "Speaker".to_string(),
+                description: "Allows your device to play sounds and music.".to_string(),
             }, ControlMetadata {
-                type_name: "type#22".to_string(),
-                name: "Item #22".to_string(),
-                description: "Item #22 Description".to_string(),
+                type_name: "hardware-audio-microphone".to_string(),
+                name: "Microphone".to_string(),
+                description: "Allows your device to listen and record audio.".to_string(),
+            }],
+        }, ControlGroup {
+            type_name: "hardware-switches".to_string(),
+            name: "Hardware - Switches".to_string(),
+            description: "Various hardware switches.".to_string(),
+            items: vec![ControlMetadata {
+                type_name: "hardware-momentary-switch".to_string(),
+                name: "Momentary Switch".to_string(),
+                description: "Allows your device to have a mechanical momentary switch."
+                    .to_string(),
+            }, ControlMetadata {
+                type_name: "hardware-maintained-switch".to_string(),
+                name: "Maintained Switch".to_string(),
+                description: "Allows your device to have a mechanical switch with a maintained \
+                    state.".to_string(),
+            }],
+        }, ControlGroup {
+            type_name: "services-storage".to_string(),
+            name: "Services - Storage".to_string(),
+            description: "Various storage related services.".to_string(),
+            items: vec![ControlMetadata {
+                type_name: "services-cloud-storage".to_string(),
+                name: "Cloud Storage".to_string(),
+                description: "Allows your device to have access to a cloud storage.".to_string(),
+            }, ControlMetadata {
+                type_name: "services-storage-adapter".to_string(),
+                name: "Storage Adapter".to_string(),
+                description: "Allows device to do various transformation on the data retrieved \
+                    from particular storage.".to_string(),
             }],
         }];
 
