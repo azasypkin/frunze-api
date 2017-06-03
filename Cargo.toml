@@ -5,7 +5,7 @@ authors = ["Aleh Zasypkin <aleh.zasypkin@gmail.com>"]
 
 [dependencies]
 bson = "0.8.0"
-docopt = "0.7.0"
+docopt = { git = "https://github.com/docopt/docopt.rs" }
 env_logger = "0.4.3"
 error-chain = "0.10.0"
 iron = "0.5.1"
@@ -13,7 +13,6 @@ log = "0.3.8"
 mount = "0.3.0"
 mongodb = { git = "https://github.com/azasypkin/mongo-rust-driver-prototype" }
 router = "0.5.1"
-rustc-serialize = "0.3.24"
 serde = "1.0.8"
 serde_derive = "1.0.8"
 serde_json = "1.0.2"

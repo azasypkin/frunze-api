@@ -18,7 +18,6 @@ extern crate iron;
 #[macro_use]
 extern crate log;
 extern crate router;
-extern crate rustc_serialize;
 extern crate serde;
 #[macro_use]
 extern crate serde_derive;
@@ -58,7 +57,7 @@ Options:
     --help              Print this help menu.
 ";
 
-#[derive(Debug, RustcDecodable)]
+#[derive(Debug, Deserialize)]
 struct Args {
     flag_ip: Option<String>,
     flag_port: Option<u16>,
@@ -135,7 +134,7 @@ fn setup_routes(database: &DB) -> Router {
 fn main() {
     env_logger::init().unwrap();
 
-    let args: Args = Docopt::new(USAGE).and_then(|d| d.decode()).unwrap_or_else(|e| e.exit());
+    let args: Args = Docopt::new(USAGE).and_then(|d| d.deserialize()).unwrap_or_else(|e| e.exit());
 
     let db_ip = args.flag_db_ip.unwrap_or_else(|| "0.0.0.0".to_string());
     let db_port = args.flag_db_port.unwrap_or(27017);
