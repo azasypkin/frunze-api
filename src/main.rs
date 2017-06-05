@@ -163,7 +163,7 @@ describe! main {
     describe! args {
         it "should have default values" {
             let args: super::super::Args = super::super::Docopt::new(USAGE)
-                .and_then(|d| d.decode())
+                .and_then(|d| d.deserialize())
                 .unwrap_or_else(|e| e.exit());
 
             assert_eq!(args.flag_verbose, false);
