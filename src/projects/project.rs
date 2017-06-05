@@ -1,3 +1,5 @@
+use projects::project_component::ProjectComponent;
+
 #[derive(Serialize, Deserialize, Debug)]
 pub struct Project {
     /// Identifier of the project.
@@ -10,4 +12,6 @@ pub struct Project {
     pub capabilities: Vec<String>,
     /// Project platform (from the list of supported platforms).
     pub platform: String,
+    /// Project components.
+    pub components: Vec<ProjectComponent>,
 }
