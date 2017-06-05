@@ -3,7 +3,7 @@ name = "frunze_api"
 version = "0.1.0"
 dependencies = [
  "bson 0.8.0 (registry+https://github.com/rust-lang/crates.io-index)",
- "clippy 0.0.136 (registry+https://github.com/rust-lang/crates.io-index)",
+ "clippy 0.0.137 (registry+https://github.com/rust-lang/crates.io-index)",
  "docopt 0.7.0 (git+https://github.com/docopt/docopt.rs)",
  "env_logger 0.4.3 (registry+https://github.com/rust-lang/crates.io-index)",
  "error-chain 0.10.0 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -141,16 +141,16 @@ dependencies = [
 
 [[package]]
 name = "clippy"
-version = "0.0.136"
+version = "0.0.137"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 dependencies = [
  "cargo_metadata 0.2.1 (registry+https://github.com/rust-lang/crates.io-index)",
- "clippy_lints 0.0.136 (registry+https://github.com/rust-lang/crates.io-index)",
+ "clippy_lints 0.0.137 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 
 [[package]]
 name = "clippy_lints"
-version = "0.0.136"
+version = "0.0.137"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 dependencies = [
  "lazy_static 0.2.8 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -969,8 +969,8 @@ dependencies = [
 "checksum cargo_metadata 0.2.1 (registry+https://github.com/rust-lang/crates.io-index)" = "5d84cb53c78e573aa126a4b9f963fdb2629f8183b26e235da08bb36dc7381162"
 "checksum cfg-if 0.1.0 (registry+https://github.com/rust-lang/crates.io-index)" = "de1e760d7b6535af4241fca8bd8adf68e2e7edacc6b29f5d399050c5e48cf88c"
 "checksum chrono 0.3.1 (registry+https://github.com/rust-lang/crates.io-index)" = "d9123be86fd2a8f627836c235ecdf331fdd067ecf7ac05aa1a68fbcf2429f056"
-"checksum clippy 0.0.136 (registry+https://github.com/rust-lang/crates.io-index)" = "71bd33c998efdaf68e6c46b2d8dc8223803eb50a6ce547d50e9e0369aed068f1"
-"checksum clippy_lints 0.0.136 (registry+https://github.com/rust-lang/crates.io-index)" = "de3bf18066ee33c3d1bedeb9c89133336c6a0a5bb37c14d4c04b8bdc2ed1c093"
+"checksum clippy 0.0.137 (registry+https://github.com/rust-lang/crates.io-index)" = "31f3cc7a67292ef868d8648c2f2a0cc6870ac37bb0f7cec3e0e9f1407e925543"
+"checksum clippy_lints 0.0.137 (registry+https://github.com/rust-lang/crates.io-index)" = "6ee969758373ea5b1a34ced0c71ed2e8974199405c1844e19828ef355c25dc8b"
 "checksum conduit-mime-types 0.7.3 (registry+https://github.com/rust-lang/crates.io-index)" = "95ca30253581af809925ef68c2641cc140d6183f43e12e0af4992d53768bd7b8"
 "checksum data-encoding 1.2.0 (registry+https://github.com/rust-lang/crates.io-index)" = "d867ddbf09de0b73e09ec798972fb7f870495a0893f6f736c1855448c5a56789"
 "checksum dbghelp-sys 0.2.0 (registry+https://github.com/rust-lang/crates.io-index)" = "97590ba53bcb8ac28279161ca943a924d1fd4a8fb3fa63302591647c4fc5b850"

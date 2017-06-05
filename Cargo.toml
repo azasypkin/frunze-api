@@ -5,6 +5,7 @@ authors = ["Aleh Zasypkin <aleh.zasypkin@gmail.com>"]
 
 [dependencies]
 bson = "0.8.0"
+clippy = {version = "0.0.137", optional = true}
 docopt = { git = "https://github.com/docopt/docopt.rs" }
 env_logger = "0.4.3"
 error-chain = "0.10.0"
@@ -22,7 +23,6 @@ uuid = { version = "0.5.0", features = ["v4"] }
 [dev-dependencies]
 stainless = "0.1.11"
 rustfmt = "0.8.4"
-clippy = "0.0.136"
 
 [features]
 default = []
