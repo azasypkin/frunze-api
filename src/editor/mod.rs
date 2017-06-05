@@ -1,2 +1,2 @@
-pub mod control_group;
-pub mod control_metadata;
+pub mod component_group;
+pub mod component_metadata;

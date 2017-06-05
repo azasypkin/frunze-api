@@ -4,7 +4,7 @@ use mongodb::db::ThreadedDatabase;
 use errors::*;
 use serde;
 
-use editor::control_group::ControlGroup;
+use editor::component_group::ComponentGroup;
 use projects::project::Project;
 use projects::project_capability_group::ProjectCapabilityGroup;
 use projects::project_capability::ProjectCapability;
@@ -55,9 +55,9 @@ impl DB {
         Ok(())
     }
 
-    /// Queries control groups from the database.
-    pub fn get_control_groups(&self) -> Result<Vec<ControlGroup>> {
-        self.get_collection("control_groups")
+    /// Queries component groups from the database.
+    pub fn get_component_groups(&self) -> Result<Vec<ComponentGroup>> {
+        self.get_collection("component_groups")
     }
 
     /// Queries project capability groups from the database.

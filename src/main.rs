@@ -83,9 +83,9 @@ fn setup_routes(database: &DB) -> Router {
     let mut router = Router::new();
 
     let db = database.clone();
-    router.get("/control-groups",
-               move |request: &mut Request| json_handler(request, || db.get_control_groups()),
-               "control-groups");
+    router.get("/component-groups",
+               move |request: &mut Request| json_handler(request, || db.get_component_groups()),
+               "component-groups");
 
     let db = database.clone();
     router.get("/project/:id", move |request: &mut Request| {

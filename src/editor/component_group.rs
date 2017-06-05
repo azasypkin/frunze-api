@@ -1,10 +1,10 @@
-use editor::control_metadata::ControlMetadata;
+use editor::component_metadata::ComponentMetadata;
 
 #[derive(Serialize, Deserialize, Debug)]
-pub struct ControlGroup {
+pub struct ComponentGroup {
     #[serde(rename(serialize = "type", deserialize = "type"))]
     pub type_name: String,
     pub name: String,
     pub description: String,
-    pub items: Vec<ControlMetadata>,
+    pub items: Vec<ComponentMetadata>,
 }
