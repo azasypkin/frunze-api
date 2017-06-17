@@ -33,7 +33,10 @@ impl DB {
     pub fn get_project(&self, project_id: &str) -> Result<Option<Project>> {
         let db = self.client.as_ref().unwrap().db(&self.name);
 
-        let result = db.collection("projects").find_one(Some(doc! { "id" => project_id }), None)?;
+        let result = db.collection("projects").find_one(
+            Some(doc! { "id" => project_id }),
+            None,
+        )?;
         let result = if let Some(project) = result {
             Some(bson::from_bson(bson::Bson::Document(project))?)
         } else {
@@ -44,7 +47,7 @@ impl DB {
     }
 
     /// Saves project to the database.
-    pub fn save_project(&self, project: &Project) -> Result<()>{
+    pub fn save_project(&self, project: &Project) -> Result<()> {
         let db = self.client.as_ref().unwrap().db(&self.name);
 
         let collection = db.collection("projects");
@@ -76,7 +79,9 @@ impl DB {
     }
 
     fn get_collection<T>(&self, collection_name: &str) -> Result<Vec<T>>
-        where T: serde::de::DeserializeOwned {
+    where
+        T: serde::de::DeserializeOwned,
+    {
         let db = self.client.as_ref().unwrap().db(&self.name);
 
         let mut result: Vec<T> = vec![];

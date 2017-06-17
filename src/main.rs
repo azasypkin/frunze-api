@@ -45,7 +45,8 @@ use errors::*;
 use uuid::Uuid;
 
 const USAGE: &'static str = "
-Usage: frunze_api [--verbose] [--ip=<address>] [--port=<port>] [--db-ip=<address>] [--db-port=<port>] [--db-name=<name>]
+Usage: frunze_api [--verbose] [--ip=<address>] [--port=<port>] [--db-ip=<address>]
+                  [--db-port=<port>] [--db-name=<name>]
        frunze_api --help
 Options:
     --ip <ip>           IP (v4) address to listen on [default: 0.0.0.0].
@@ -69,10 +70,16 @@ struct Args {
 }
 
 fn json_handler<F, T: Sized>(request: &mut Request, content_retriever: F) -> IronResult<Response>
-    where F: FnOnce() -> Result<T>, T: serde::Serialize {
+where
+    F: FnOnce() -> Result<T>,
+    T: serde::Serialize,
+{
     info!("Request received: {}", request.url);
-    let content_type = mime::Mime(mime::TopLevel::Application, mime::SubLevel::Json,
-                                  vec![(mime::Attr::Charset, mime::Value::Utf8)]);
+    let content_type = mime::Mime(
+        mime::TopLevel::Application,
+        mime::SubLevel::Json,
+        vec![(mime::Attr::Charset, mime::Value::Utf8)],
+    );
     let response_body = serde_json::to_string(&content_retriever()?)
         .map_err(|e| -> Error { e.into() })?;
 
@@ -83,15 +90,27 @@ fn setup_routes(database: &DB) -> Router {
     let mut router = Router::new();
 
     let db = database.clone();
-    router.get("/component-groups",
-               move |request: &mut Request| json_handler(request, || db.get_component_groups()),
-               "component-groups");
+    router.get(
+        "/component-groups",
+        move |request: &mut Request| json_handler(request, || db.get_component_groups()),
+        "component-groups",
+    );
 
     let db = database.clone();
-    router.get("/project/:id", move |request: &mut Request| {
-        let project_id = request.extensions.get::<Router>().unwrap().find("id").unwrap().to_owned();
-        json_handler(request, || db.get_project(&project_id))
-    }, "project");
+    router.get(
+        "/project/:id",
+        move |request: &mut Request| {
+            let project_id = request
+                .extensions
+                .get::<Router>()
+                .unwrap()
+                .find("id")
+                .unwrap()
+                .to_owned();
+            json_handler(request, || db.get_project(&project_id))
+        },
+        "project",
+    );
 
     let db = database.clone();
     router.post("/project", move |request: &mut Request| -> IronResult<Response> {
@@ -113,20 +132,25 @@ fn setup_routes(database: &DB) -> Router {
     }, "project-set");
 
     let db = database.clone();
-    router.get("/project-capabilities",
-               move |request: &mut Request| json_handler(request, || db.get_project_capabilities()),
-               "project-capabilities");
+    router.get(
+        "/project-capabilities",
+        move |request: &mut Request| json_handler(request, || db.get_project_capabilities()),
+        "project-capabilities",
+    );
 
     let db = database.clone();
-    router.get("/project-capability-groups",
-               move |request: &mut Request| json_handler(request,
-                                                         || db.get_project_capability_groups()),
-               "project-capability-groups");
+    router.get(
+        "/project-capability-groups",
+        move |request: &mut Request| json_handler(request, || db.get_project_capability_groups()),
+        "project-capability-groups",
+    );
 
     let db = database.clone();
-    router.get("/project-platforms",
-               move |request: &mut Request| json_handler(request, || db.get_project_platforms()),
-               "project-platforms");
+    router.get(
+        "/project-platforms",
+        move |request: &mut Request| json_handler(request, || db.get_project_platforms()),
+        "project-platforms",
+    );
 
     router
 }
@@ -134,15 +158,24 @@ fn setup_routes(database: &DB) -> Router {
 fn main() {
     env_logger::init().unwrap();
 
-    let args: Args = Docopt::new(USAGE).and_then(|d| d.deserialize()).unwrap_or_else(|e| e.exit());
+    let args: Args = Docopt::new(USAGE)
+        .and_then(|d| d.deserialize())
+        .unwrap_or_else(|e| e.exit());
 
     let db_ip = args.flag_db_ip.unwrap_or_else(|| "0.0.0.0".to_string());
     let db_port = args.flag_db_port.unwrap_or(27017);
     let db_name = args.flag_db_name.unwrap_or_else(|| "frunze".to_string());
 
-    info!("Connecting to the database `{}` at {}:{}", db_name, db_ip, db_port);
+    info!(
+        "Connecting to the database `{}` at {}:{}",
+        db_name,
+        db_ip,
+        db_port
+    );
     let mut database = DB::new(db_name);
-    database.connect(&db_ip, db_port).expect("Failed to connect to the database.");
+    database
+        .connect(&db_ip, db_port)
+        .expect("Failed to connect to the database.");
 
     let ip = args.flag_ip.unwrap_or_else(|| "0.0.0.0".to_string());
     let port = args.flag_port.unwrap_or(8009);

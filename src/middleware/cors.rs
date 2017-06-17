@@ -1,4 +1,4 @@
-use iron::{ AfterMiddleware, headers};
+use iron::{AfterMiddleware, headers};
 use iron::method::Method;
 use iron::method::Method::*;
 use iron::prelude::*;
@@ -11,15 +11,13 @@ pub struct CORSMiddleware;
 impl CORSMiddleware {
     pub fn add_headers(res: &mut Response) {
         res.headers.set(headers::AccessControlAllowOrigin::Any);
-        res.headers.set(headers::AccessControlAllowHeaders(
-            vec![
-                UniCase(String::from("accept")),
-                UniCase(String::from("authorization")),
-                UniCase(String::from("content-type"))
-            ]
-        ));
+        res.headers.set(headers::AccessControlAllowHeaders(vec![
+            UniCase(String::from("accept")),
+            UniCase(String::from("authorization")),
+            UniCase(String::from("content-type")),
+        ]));
         res.headers.set(headers::AccessControlAllowMethods(
-            vec![Get, Post, Put, Delete]
+            vec![Get, Post, Put, Delete],
         ));
     }
 }
