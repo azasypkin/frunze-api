@@ -1,0 +1,26 @@
+dist: trusty
+
+language: rust
+
+rust:
+  - stable
+  - beta
+  - nightly
+
+matrix:
+  allow_failures:
+    - rust: nightly
+
+before_script:
+  - bash -c 'if [[ "$TRAVIS_RUST_VERSION" == "nightly" ]]; then
+      cargo install clippy --force;
+    fi'
+
+script:
+  - cargo build
+  - bash -c 'if [[ "$TRAVIS_RUST_VERSION" == "nightly" ]]; then
+      cargo clippy -- -D warnings;
+    fi'
+  - bash -c 'if [[ "$TRAVIS_RUST_VERSION" == "nightly" ]]; then
+      cargo test --features stainless;
+    fi'
