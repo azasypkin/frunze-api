@@ -46,6 +46,11 @@ impl DB {
         Ok(result)
     }
 
+    /// Queries all projects from the database.
+    pub fn get_projects(&self) -> Result<Vec<Project>> {
+        self.get_collection("projects")
+    }
+
     /// Saves project to the database.
     pub fn save_project(&self, project: &Project) -> Result<()> {
         let db = self.client.as_ref().unwrap().db(&self.name);

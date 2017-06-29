@@ -113,6 +113,13 @@ fn setup_routes(database: &DB) -> Router {
     );
 
     let db = database.clone();
+    router.get(
+        "/projects",
+        move |request: &mut Request| json_handler(request, || db.get_projects()),
+        "projects",
+    );
+
+    let db = database.clone();
     router.post("/project", move |request: &mut Request| -> IronResult<Response> {
         let mut payload = String::new();
         itry!(request.body.read_to_string(&mut payload));
