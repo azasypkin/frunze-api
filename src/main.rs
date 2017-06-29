@@ -113,6 +113,22 @@ fn setup_routes(database: &DB) -> Router {
     );
 
     let db = database.clone();
+    router.delete(
+        "/project/:id",
+        move |request: &mut Request| {
+            let project_id = request
+                .extensions
+                .get::<Router>()
+                .unwrap()
+                .find("id")
+                .unwrap()
+                .to_owned();
+            json_handler(request, || db.delete_project(&project_id))
+        },
+        "project",
+    );
+
+    let db = database.clone();
     router.get(
         "/projects",
         move |request: &mut Request| json_handler(request, || db.get_projects()),

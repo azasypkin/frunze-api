@@ -1,5 +1,6 @@
 use bson;
 use mongodb::{Client, ThreadedClient};
+use mongodb::error::Error;
 use mongodb::db::ThreadedDatabase;
 use errors::*;
 use serde;
@@ -44,6 +45,22 @@ impl DB {
         };
 
         Ok(result)
+    }
+
+    /// Deletes project from the database based on passed `project_id`.
+    pub fn delete_project(&self, project_id: &str) -> Result<()> {
+        let db = self.client.as_ref().unwrap().db(&self.name);
+
+        let result = db.collection("projects").delete_one(
+            doc! { "id" => project_id },
+            None,
+        )?;
+
+        if let Some(write_exception) = result.write_exception {
+            return Err(Error::WriteError(write_exception).into());
+        }
+
+        Ok(())
     }
 
     /// Queries all projects from the database.
