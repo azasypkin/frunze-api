@@ -42,8 +42,6 @@ use mount::Mount;
 use router::Router;
 use errors::*;
 
-use uuid::Uuid;
-
 const USAGE: &'static str = "
 Usage: frunze_api [--verbose] [--ip=<address>] [--port=<port>] [--db-ip=<address>]
                   [--db-port=<port>] [--db-name=<name>]
@@ -140,16 +138,10 @@ fn setup_routes(database: &DB) -> Router {
         let mut payload = String::new();
         itry!(request.body.read_to_string(&mut payload));
 
-        let mut project: projects::project::Project = itry!(serde_json::from_str(&payload));
-
         // FIXME: Right now we have only POST method implemented, but later on this method should be
         // used only for new projects, if we receive project with non-empty ID we should throw and
         // recommend using PUT method, similar behavior should be implemented for PUT method.
-        if project.id.is_empty() {
-            project.id = Uuid::new_v4().to_string();
-        }
-
-        db.save_project(&project)?;
+        let project = db.save_project(itry!(serde_json::from_str(&payload)))?;
 
         Ok(Response::with((status::Ok, project.id)))
     }, "project-set");

@@ -4,6 +4,7 @@ use mongodb::error::Error;
 use mongodb::db::ThreadedDatabase;
 use errors::*;
 use serde;
+use uuid::Uuid;
 
 use editor::component_group::ComponentGroup;
 use projects::project::Project;
@@ -69,15 +70,26 @@ impl DB {
     }
 
     /// Saves project to the database.
-    pub fn save_project(&self, project: &Project) -> Result<()> {
+    pub fn save_project(&self, mut project: Project) -> Result<Project> {
         let db = self.client.as_ref().unwrap().db(&self.name);
+
+        let insert_new = project.id.is_empty();
+        if insert_new {
+            project.id = Uuid::new_v4().to_string();
+        }
 
         let collection = db.collection("projects");
         if let bson::Bson::Document(document) = bson::to_bson(&project)? {
-            collection.insert_one(document, None)?;
+            if insert_new {
+                collection.insert_one(document, None)?;
+            } else {
+                let project_id = &project.id;
+                collection.replace_one(doc! { "id" => project_id }, document, None)?;
+            }
+
         }
 
-        Ok(())
+        Ok(project)
     }
 
     /// Queries component groups from the database.
