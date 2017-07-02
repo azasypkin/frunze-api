@@ -1,7 +1,7 @@
 use std::collections::HashMap;
 
 #[derive(Serialize, Deserialize, Debug)]
-pub struct ProjectComponent {
+pub struct Component {
     /// Identifier of the project component.
     pub id: String,
     #[serde(rename(serialize = "type", deserialize = "type"))]

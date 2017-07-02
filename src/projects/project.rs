@@ -1,4 +1,4 @@
-use projects::project_component::ProjectComponent;
+use components::component::Component;
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct Project {
@@ -13,5 +13,5 @@ pub struct Project {
     /// Project platform (from the list of supported platforms).
     pub platform: String,
     /// Project components.
-    pub components: Vec<ProjectComponent>,
+    pub components: Vec<Component>,
 }

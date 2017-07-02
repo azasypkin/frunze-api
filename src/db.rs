@@ -6,6 +6,7 @@ use errors::*;
 use serde;
 use uuid::Uuid;
 
+use components::component_schema::ComponentSchema;
 use editor::component_group::ComponentGroup;
 use projects::project::Project;
 use projects::project_capability_group::ProjectCapabilityGroup;
@@ -95,6 +96,11 @@ impl DB {
     /// Queries component groups from the database.
     pub fn get_component_groups(&self) -> Result<Vec<ComponentGroup>> {
         self.get_collection("component_groups")
+    }
+
+    /// Queries component schemas from the database.
+    pub fn get_component_schemas(&self) -> Result<Vec<ComponentSchema>> {
+        self.get_collection("component_schemas")
     }
 
     /// Queries project capability groups from the database.

@@ -28,6 +28,7 @@ extern crate uuid;
 mod middleware;
 mod errors;
 mod editor;
+mod components;
 mod projects;
 mod db;
 
@@ -92,6 +93,13 @@ fn setup_routes(database: &DB) -> Router {
         "/component-groups",
         move |request: &mut Request| json_handler(request, || db.get_component_groups()),
         "component-groups",
+    );
+
+    let db = database.clone();
+    router.get(
+        "/component-schemas",
+        move |request: &mut Request| json_handler(request, || db.get_component_schemas()),
+        "component-schemas",
     );
 
     let db = database.clone();
