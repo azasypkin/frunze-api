@@ -27,7 +27,6 @@ extern crate uuid;
 
 mod middleware;
 mod errors;
-mod editor;
 mod components;
 mod projects;
 mod db;

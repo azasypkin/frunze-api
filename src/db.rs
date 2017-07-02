@@ -7,7 +7,7 @@ use serde;
 use uuid::Uuid;
 
 use components::component_schema::ComponentSchema;
-use editor::component_group::ComponentGroup;
+use components::component_group::ComponentGroup;
 use projects::project::Project;
 use projects::project_capability_group::ProjectCapabilityGroup;
 use projects::project_capability::ProjectCapability;

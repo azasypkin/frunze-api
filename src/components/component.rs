@@ -4,9 +4,9 @@ use std::collections::HashMap;
 pub struct Component {
     /// Identifier of the project component.
     pub id: String,
+    /// Type of the project component.
     #[serde(rename(serialize = "type", deserialize = "type"))]
     pub type_name: String,
-    pub name: String,
-    pub description: String,
+    /// Values of project component properties.
     pub properties: HashMap<String, String>,
 }
