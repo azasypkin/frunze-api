@@ -9,5 +9,6 @@ pub struct ComponentPropertySchema {
     /// Human-readable property long description.
     pub description: String,
     /// Default value of the property.
-    pub default: String,
+    #[serde(rename(serialize = "defaultValue", deserialize = "defaultValue"))]
+    pub default_value: String,
 }
