@@ -1,6 +1,6 @@
-/// Describes component property value option.
+/// Describes component property predefined value.
 #[derive(Serialize, Deserialize, Debug)]
-pub struct ComponentPropertyValueOption {
+pub struct ComponentPropertyPredefinedValue {
     /// Property value option type.
     #[serde(rename(serialize = "type", deserialize = "type"))]
     pub type_name: String,
@@ -8,6 +8,21 @@ pub struct ComponentPropertyValueOption {
     pub name: String,
     /// Human-readable value option type long description.
     pub description: String,
+}
+
+/// Describes kind of component property.
+#[derive(Serialize, Deserialize, Debug)]
+pub enum ComponentPropertyValueKind {
+    /// Value is arbitrary string.
+    #[serde(rename(serialize = "custom", deserialize = "custom"))]
+    Custom,
+    /// Value is string limited by the predefined list of options.
+    #[serde(rename(serialize = "predefined", deserialize = "predefined"))]
+    Predefined(Vec<ComponentPropertyPredefinedValue>),
+    /// Value is identifier of the component which type is limited by the predefined list of
+    /// component types.
+    #[serde(rename(serialize = "component", deserialize = "component"))]
+    Component(Vec<String>),
 }
 
 /// Describes single component property.
@@ -23,8 +38,6 @@ pub struct ComponentPropertySchema {
     /// Default value of the property.
     #[serde(rename(serialize = "defaultValue", deserialize = "defaultValue"))]
     pub default_value: String,
-    /// Property value kind (string or options).
-    pub kind: String,
-    /// Possible value options (optional, available only for properties with `kind == options`.
-    pub options: Option<Vec<ComponentPropertyValueOption>>,
+    /// Property value kind.
+    pub kind: ComponentPropertyValueKind,
 }
