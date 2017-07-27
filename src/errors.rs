@@ -4,6 +4,10 @@ use mongodb;
 use iron::IronError;
 use iron::status::Status;
 
+use hyper;
+use hyper::error::UriError;
+use url;
+
 use serde_json;
 
 // Create the Error, ErrorKind, ResultExt, and Result types
@@ -17,6 +21,10 @@ error_chain! {
         BsonDecoder(bson::DecoderError);
         Mongo(mongodb::Error);
         Serde(serde_json::Error);
+        Io(::std::io::Error);
+        Hyper(hyper::Error);
+        HyperUri(UriError);
+        Url(url::ParseError);
     }
 }
 

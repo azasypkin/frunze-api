@@ -85,7 +85,11 @@ impl DB {
                 collection.insert_one(document, None)?;
             } else {
                 let project_id = &project.id;
-                collection.replace_one(doc! { "id" => project_id }, document, None)?;
+                collection.replace_one(
+                    doc! { "id" => project_id },
+                    document,
+                    None,
+                )?;
             }
 
         }
