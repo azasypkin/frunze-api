@@ -16,20 +16,25 @@ pub struct PartOffer {
     octopart_rfq_url: Option<String>,
     /// Dictionary mapping currencies to lists of (Break, Price) tuples.
     prices: PartPrices,
-    /// Number of parts seller has available.
+    /// The number of parts the seller has in stock ready for shipment. Negative numbers are used to
+    /// indicate the following conditions:
+    /// -1: Non-stocked (seller is not currently stocking the product)
+    /// -2: Yes (seller has the product in stock but has not reported the quantity)
+    /// -3: Unknown (seller has not indicated whether or not they have parts in stock)
+    /// -4: RFQ
     in_stock_quantity: i32,
     /// Number of parts on order from factory.
-    on_order_quantity: Option<i32>,
+    on_order_quantity: Option<u32>,
     /// ISO 8601 formatted ETA of order from factory.
     on_order_eta: Option<String>,
     /// Number of days to acquire parts from factory.
-    factory_lead_days: Option<i32>,
+    factory_lead_days: Option<u32>,
     /// Order multiple for factory orders.
-    factory_order_multiple: Option<i32>,
+    factory_order_multiple: Option<u32>,
     /// Number of items which must be ordered together
-    order_multiple: Option<i32>,
+    order_multiple: Option<u32>,
     /// Minimum order quantity.
-    moq: Option<i32>,
+    moq: Option<u32>,
     /// Form of offer packaging (e.g. reel, tape).
     /// TODO Use Enum.
     packaging: Option<String>,

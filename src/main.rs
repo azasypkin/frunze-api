@@ -203,6 +203,22 @@ fn setup_bom_routers(router: &mut Router, bom_provider: &BomProvider) {
         },
         "bom-part",
     );
+
+    let bom = bom_provider.clone();
+    router.get(
+        "/bom/parts/:mpn",
+        move |request: &mut Request| {
+            let mpn = request
+                .extensions
+                .get::<Router>()
+                .unwrap()
+                .find("mpn")
+                .unwrap()
+                .to_owned();
+            json_handler(request, || bom.find_parts(mpn))
+        },
+        "bom-find-parts",
+    );
 }
 
 fn main() {
