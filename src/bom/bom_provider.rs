@@ -1,4 +1,4 @@
-use errors::*;
+use errors::Result;
 use futures::{future, Future, Stream};
 use hyper::{Error as HyperError, Client};
 use tokio_core::reactor::Core;

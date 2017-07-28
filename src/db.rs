@@ -2,7 +2,7 @@ use bson;
 use mongodb::{Client, ThreadedClient};
 use mongodb::error::Error;
 use mongodb::db::ThreadedDatabase;
-use errors::*;
+use errors::Result;
 use serde;
 use uuid::Uuid;
 

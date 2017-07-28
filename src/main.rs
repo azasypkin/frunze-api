@@ -45,7 +45,7 @@ use iron::{Chain, mime, status};
 use iron::prelude::*;
 use mount::Mount;
 use router::Router;
-use errors::*;
+use errors::{Error, Result};
 use bom::bom_provider::BomProvider;
 
 const USAGE: &'static str = "
