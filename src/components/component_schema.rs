@@ -35,6 +35,8 @@ pub struct ComponentSchema {
     pub name: String,
     /// Human-readable component long description.
     pub description: String,
+    /// The manufacturer number of the real hardware part associated with the component if any.
+    pub mpn: Option<String>,
     /// Property type <-> property schema map.
     pub properties: HashMap<String, ComponentPropertySchema>,
     /// Action type <-> action map.
