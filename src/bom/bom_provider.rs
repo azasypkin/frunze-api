@@ -1,4 +1,4 @@
-use errors::Result;
+use errors::{Error, Result};
 use futures::{future, Future, Stream};
 use hyper::{Error as HyperError, Client};
 use tokio_core::reactor::Core;
@@ -27,9 +27,6 @@ impl BomProvider {
 
     /// Returns Part information by it's `uid`.
     pub fn get_part<T: Into<String>>(&self, uid: T) -> Result<Part> {
-        let mut core = Core::new()?;
-        let client = Client::new(&core.handle());
-
         let url = Url::parse_with_params(
             &format!("{}/parts/{}", &self.api_url, uid.into()),
             &[
@@ -38,25 +35,10 @@ impl BomProvider {
             ],
         )?;
 
-        let work = client.get(url.into_string().parse()?).and_then(|res| {
-            res.body()
-                .fold(Vec::new(), |mut v: Vec<u8>, chunk| {
-                    v.extend(&chunk[..]);
-                    future::ok::<_, HyperError>(v)
-                })
-                .and_then(|chunks| {
-                    let s = String::from_utf8(chunks).unwrap();
-                    future::ok::<_, HyperError>(s)
-                })
-        });
-
-        Ok(serde_json::from_str(&core.run(work)?)?)
+        Ok(serde_json::from_str(&BomProvider::get(url)?)?)
     }
 
     pub fn find_parts<T: Into<String>>(&self, mpn: T) -> Result<Vec<Part>> {
-        let mut core = Core::new()?;
-        let client = Client::new(&core.handle());
-
         let request = PartsMatchRequest {
             queries: vec![PartsMatchQuery::by_mpn(mpn).with_limit(1)],
             exact_only: false,
@@ -70,6 +52,20 @@ impl BomProvider {
             ],
         )?;
 
+        let mut response: PartsMatchResponse = serde_json::from_str(&BomProvider::get(url)?)?;
+        if response.results.is_empty() {
+            return Ok(vec![]);
+        }
+
+        let mut first_result = response.results.swap_remove(0);
+        let parts = first_result.items.drain(..).collect();
+        Ok(parts)
+    }
+
+    fn get(url: Url) -> Result<String> {
+        let mut core = Core::new()?;
+        let client = Client::new(&core.handle());
+
         let work = client.get(url.into_string().parse()?).and_then(|res| {
             res.body()
                 .fold(Vec::new(), |mut v: Vec<u8>, chunk| {
@@ -82,13 +78,6 @@ impl BomProvider {
                 })
         });
 
-        let mut response: PartsMatchResponse = serde_json::from_str(&core.run(work)?)?;
-        if response.results.is_empty() {
-            return Ok(vec![]);
-        }
-
-        let mut first_result = response.results.swap_remove(0);
-        let parts = first_result.items.drain(..).collect();
-        Ok(parts)
+        core.run(work).map_err(|e| -> Error { e.into() })
     }
 }
