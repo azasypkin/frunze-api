@@ -45,8 +45,10 @@ use iron::{Chain, mime, status};
 use iron::prelude::*;
 use mount::Mount;
 use router::Router;
-use errors::{Error, Result};
+use errors::{Error, ErrorKind, Result};
 use bom::bom_provider::BomProvider;
+
+use url::percent_encoding::percent_decode;
 
 const USAGE: &'static str = "
 Usage: frunze_api [--verbose] [--ip=<address>] [--port=<port>] [--db-ip=<address>]
@@ -78,7 +80,7 @@ struct Args {
     flag_help: bool,
 }
 
-fn json_handler<F, T: Sized>(request: &mut Request, content_retriever: F) -> IronResult<Response>
+fn json_handler<F, T: Sized>(request: &Request, content_retriever: F) -> IronResult<Response>
 where
     F: FnOnce() -> Result<T>,
     T: serde::Serialize,
@@ -96,6 +98,18 @@ where
     )?;
 
     Ok(Response::with((content_type, status::Ok, response_body)))
+}
+
+fn get_router_argument(request: &Request, argument_name: &str) -> Result<String> {
+    request
+        .extensions
+        .get::<Router>()
+        .and_then(|router| router.find(argument_name))
+        .and_then(|arg| percent_decode(arg.as_bytes()).decode_utf8().ok())
+        .map(|arg| arg.to_string())
+        .ok_or_else(|| {
+            ErrorKind::RouterArgumentIsNotProvided(argument_name.to_string()).into()
+        })
 }
 
 fn setup_db_routers(router: &mut Router, database: &DB) {
@@ -117,13 +131,7 @@ fn setup_db_routers(router: &mut Router, database: &DB) {
     router.get(
         "/project/:id",
         move |request: &mut Request| {
-            let project_id = request
-                .extensions
-                .get::<Router>()
-                .unwrap()
-                .find("id")
-                .unwrap()
-                .to_owned();
+            let project_id = itry!(get_router_argument(request, "id"), status::BadRequest);
             json_handler(request, || db.get_project(&project_id))
         },
         "project",
@@ -133,13 +141,7 @@ fn setup_db_routers(router: &mut Router, database: &DB) {
     router.delete(
         "/project/:id",
         move |request: &mut Request| {
-            let project_id = request
-                .extensions
-                .get::<Router>()
-                .unwrap()
-                .find("id")
-                .unwrap()
-                .to_owned();
+            let project_id = itry!(get_router_argument(request, "id"), status::BadRequest);
             json_handler(request, || db.delete_project(&project_id))
         },
         "project",
@@ -192,13 +194,7 @@ fn setup_bom_routers(router: &mut Router, bom_provider: &BomProvider) {
     router.get(
         "/bom/part/:uid",
         move |request: &mut Request| {
-            let part_uid = request
-                .extensions
-                .get::<Router>()
-                .unwrap()
-                .find("uid")
-                .unwrap()
-                .to_owned();
+            let part_uid = itry!(get_router_argument(request, "uid"), status::BadRequest);
             json_handler(request, || bom.get_part(part_uid))
         },
         "bom-part",
@@ -208,14 +204,8 @@ fn setup_bom_routers(router: &mut Router, bom_provider: &BomProvider) {
     router.get(
         "/bom/parts/:mpn",
         move |request: &mut Request| {
-            let mpn = request
-                .extensions
-                .get::<Router>()
-                .unwrap()
-                .find("mpn")
-                .unwrap()
-                .to_owned();
-            json_handler(request, || bom.find_parts(mpn))
+            let mpn = itry!(get_router_argument(request, "mpn"), status::BadRequest);
+            json_handler(request, || bom.find_parts(mpn.split(",").collect()))
         },
         "bom-find-parts",
     );

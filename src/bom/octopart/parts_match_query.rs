@@ -30,11 +30,10 @@ pub struct PartsMatchQuery {
 }
 
 impl PartsMatchQuery {
-    /// Returns `PartsMatchQuery` with only `mpn` field filled.
-    pub fn by_mpn<T: Into<String>>(mpn: T) -> PartsMatchQuery {
+    pub fn new() -> Self {
         PartsMatchQuery {
             q: None,
-            mpn: Some(mpn.into()),
+            mpn: None,
             brand: None,
             sku: None,
             seller: None,
@@ -43,6 +42,12 @@ impl PartsMatchQuery {
             limit: 10,
             reference: None,
         }
+    }
+
+    /// Consumes itself to set `mpn` field.
+    pub fn with_mpn<T: Into<String>>(mut self, mpn: T) -> PartsMatchQuery {
+        self.mpn = Some(mpn.into());
+        self
     }
 
     /// Consumes itself to set `limit` field.

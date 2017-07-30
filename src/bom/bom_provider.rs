@@ -4,6 +4,7 @@ use hyper::{Error as HyperError, Client};
 use tokio_core::reactor::Core;
 use serde_json;
 use url::Url;
+use std::collections::HashMap;
 
 use super::octopart::part::Part;
 use super::octopart::parts_match_request::PartsMatchRequest;
@@ -38,9 +39,11 @@ impl BomProvider {
         Ok(serde_json::from_str(&BomProvider::get(url)?)?)
     }
 
-    pub fn find_parts<T: Into<String>>(&self, mpn: T) -> Result<Vec<Part>> {
+    pub fn find_parts<T: Into<String>>(&self, mpns: Vec<T>) -> Result<HashMap<String, Vec<Part>>> {
         let request = PartsMatchRequest {
-            queries: vec![PartsMatchQuery::by_mpn(mpn).with_limit(1)],
+            queries: mpns.into_iter()
+                .map(|mpn| PartsMatchQuery::new().with_mpn(mpn).with_limit(1))
+                .collect(),
             exact_only: false,
         };
 
@@ -52,14 +55,20 @@ impl BomProvider {
             ],
         )?;
 
-        let mut response: PartsMatchResponse = serde_json::from_str(&BomProvider::get(url)?)?;
-        if response.results.is_empty() {
-            return Ok(vec![]);
-        }
+        let response: PartsMatchResponse = serde_json::from_str(&BomProvider::get(url)?)?;
+        let result_map = response
+            .results
+            .into_iter()
+            .enumerate()
+            .map(|(index, result)| {
+                let mpn_at_index = request.queries.get(index).and_then(|query| {
+                    query.mpn.as_ref().map(|s| s.to_string())
+                });
+                (mpn_at_index.unwrap_or("unknown".to_string()), result.items)
+            })
+            .collect();
 
-        let mut first_result = response.results.swap_remove(0);
-        let parts = first_result.items.drain(..).collect();
-        Ok(parts)
+        Ok(result_map)
     }
 
     fn get(url: Url) -> Result<String> {

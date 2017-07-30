@@ -26,6 +26,13 @@ error_chain! {
         HyperUri(UriError);
         Url(url::ParseError);
     }
+
+    errors {
+        RouterArgumentIsNotProvided(argument_name: String) {
+            description("Router argument is not provided")
+            display("Router argument is not provided: '{}'", argument_name)
+        }
+    }
 }
 
 impl From<Error> for IronError {
