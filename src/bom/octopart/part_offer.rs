@@ -22,6 +22,7 @@ pub struct PartOffer {
     /// -2: Yes (seller has the product in stock but has not reported the quantity)
     /// -3: Unknown (seller has not indicated whether or not they have parts in stock)
     /// -4: RFQ
+    #[serde(rename(serialize = "inStockQuantity"))]
     in_stock_quantity: i32,
     /// Number of parts on order from factory.
     on_order_quantity: Option<u32>,

@@ -7,6 +7,7 @@ pub struct Part {
     /// The manufacturer part number.
     mpn: String,
     /// The url of the Octopart part detail page.
+    #[serde(rename(serialize = "url"))]
     octopart_url: String,
     /// List of offer objects.
     offers: Vec<PartOffer>,

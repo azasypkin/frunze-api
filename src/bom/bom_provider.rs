@@ -39,7 +39,10 @@ impl BomProvider {
         Ok(serde_json::from_str(&BomProvider::get(url)?)?)
     }
 
-    pub fn find_parts<T: Into<String>>(&self, mpns: Vec<T>) -> Result<HashMap<String, Vec<Part>>> {
+    pub fn find_parts<T: Into<String>>(
+        &self,
+        mpns: Vec<T>,
+    ) -> Result<HashMap<String, Option<Part>>> {
         let request = PartsMatchRequest {
             queries: mpns.into_iter()
                 .map(|mpn| PartsMatchQuery::new().with_mpn(mpn).with_limit(1))
@@ -60,11 +63,14 @@ impl BomProvider {
             .results
             .into_iter()
             .enumerate()
-            .map(|(index, result)| {
+            .map(|(index, mut result)| {
                 let mpn_at_index = request.queries.get(index).and_then(|query| {
                     query.mpn.as_ref().map(|s| s.to_string())
                 });
-                (mpn_at_index.unwrap_or("unknown".to_string()), result.items)
+                (
+                    mpn_at_index.unwrap_or("unknown".to_string()),
+                    result.items.drain(..).last(),
+                )
             })
             .collect();
 
