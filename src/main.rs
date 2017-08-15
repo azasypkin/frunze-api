@@ -243,7 +243,7 @@ fn setup_schematic_routes(
             })?;
 
             let content = schematic_provider.get(project)?;
-            let content_type = "application/zip".parse::<mime::Mime>().unwrap();
+            let content_type = "image/svg+xml".parse::<mime::Mime>().unwrap();
             Ok(Response::with((content_type, status::Ok, content)))
         },
         "schematic-project",
