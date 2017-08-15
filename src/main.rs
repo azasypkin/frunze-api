@@ -25,9 +25,14 @@ extern crate serde;
 #[macro_use]
 extern crate serde_derive;
 extern crate serde_json;
+extern crate staticfile;
 extern crate unicase;
 extern crate url;
 extern crate uuid;
+extern crate zip;
+
+use std::net::{SocketAddr, IpAddr};
+use std::path::Path;
 
 mod middleware;
 mod errors;
@@ -35,6 +40,7 @@ mod components;
 mod projects;
 mod db;
 mod bom;
+mod schematic;
 
 use std::io::Read;
 use db::DB;
@@ -45,26 +51,29 @@ use iron::{Chain, mime, status};
 use iron::prelude::*;
 use mount::Mount;
 use router::Router;
+use staticfile::Static;
 use errors::{Error, ErrorKind, Result};
 use bom::bom_provider::BomProvider;
+use schematic::schematic_provider::SchematicProvider;
 
 use url::percent_encoding::percent_decode;
 
 const USAGE: &'static str = "
 Usage: frunze_api [--verbose] [--ip=<address>] [--port=<port>] [--db-ip=<address>]
                   [--db-port=<port>] [--db-name=<name>] [--bom-api-url=<url>]
-                  [--bom-api-key=<key>]
+                  [--bom-api-key=<key>] [--export-api-url=<url>]
        frunze_api --help
 Options:
-    --ip <ip>           IP (v4) address to listen on [default: 0.0.0.0].
-    --port <port>       Port number to listen on [default: 8009].
-    --db-ip <ip>        IP (v4) address of the database [default: 0.0.0.0].
-    --db-port <port>    Port number of the database [default: 27017].
-    --db-name <name>    Name of the database to use [default: frunze].
-    --bom-api-url <url> URL of BOM API provider [default: http://octopart.com/api/v3].
-    --bom-api-key <key> API key to use for all requests to BOM API provider.
-    --verbose           Toggle verbose output.
-    --help              Print this help menu.
+    --ip <ip>               IP (v4) address to listen on [default: 0.0.0.0].
+    --port <port>           Port number to listen on [default: 8009].
+    --db-ip <ip>            IP (v4) address of the database [default: 0.0.0.0].
+    --db-port <port>        Port number of the database [default: 27017].
+    --db-name <name>        Name of the database to use [default: frunze].
+    --bom-api-url <url>     URL of BOM API provider [default: http://octopart.com/api/v3].
+    --bom-api-key <key>     API key to use for all requests to BOM API provider.
+    --export-api-url <url>  URL of Schematic Export API provider [default: http://localhost:8010].
+    --verbose               Toggle verbose output.
+    --help                  Print this help menu.
 ";
 
 #[derive(Debug, Deserialize)]
@@ -76,6 +85,7 @@ struct Args {
     flag_db_name: Option<String>,
     flag_bom_api_url: Option<String>,
     flag_bom_api_key: String,
+    flag_export_api_url: Option<String>,
     flag_verbose: bool,
     flag_help: bool,
 }
@@ -112,7 +122,7 @@ fn get_router_argument(request: &Request, argument_name: &str) -> Result<String>
         })
 }
 
-fn setup_db_routers(router: &mut Router, database: &DB) {
+fn setup_db_routes(router: &mut Router, database: &DB) {
     let db = database.clone();
     router.get(
         "/component-groups",
@@ -189,7 +199,7 @@ fn setup_db_routers(router: &mut Router, database: &DB) {
     );
 }
 
-fn setup_bom_routers(router: &mut Router, bom_provider: &BomProvider) {
+fn setup_bom_routes(router: &mut Router, bom_provider: &BomProvider) {
     let bom = bom_provider.clone();
     router.get(
         "/bom/part/:uid",
@@ -211,6 +221,35 @@ fn setup_bom_routers(router: &mut Router, bom_provider: &BomProvider) {
     );
 }
 
+fn setup_schematic_routes(
+    router: &mut Router,
+    schematic_provider: &SchematicProvider,
+    database: &DB,
+) {
+    let schematic_provider = schematic_provider.clone();
+    let db = database.clone();
+    router.get(
+        "/schematic/:project-id",
+        move |request: &mut Request| {
+            let project_id = itry!(
+                get_router_argument(request, "project-id"),
+                status::BadRequest
+            );
+            let project = db.get_project(&project_id)?;
+
+            let project = project.ok_or_else(|| {
+                let err: Error = ErrorKind::ProjectNotFound(project_id.to_string()).into();
+                iron::IronError::new(err, status::NotFound)
+            })?;
+
+            let content = schematic_provider.get(project)?;
+            let content_type = "application/zip".parse::<mime::Mime>().unwrap();
+            Ok(Response::with((content_type, status::Ok, content)))
+        },
+        "schematic-project",
+    );
+}
+
 fn main() {
     env_logger::init().unwrap();
 
@@ -218,11 +257,20 @@ fn main() {
         .and_then(|d| d.deserialize())
         .unwrap_or_else(|e| e.exit());
 
+    let ip = args.flag_ip.unwrap_or_else(|| "0.0.0.0".to_string());
+    let port = args.flag_port.unwrap_or(8009);
+    let host_address: SocketAddr = SocketAddr::new(IpAddr::V4(ip.parse().unwrap()), port);
+
     let bom_api_url = args.flag_bom_api_url.unwrap_or_else(|| {
         "http://octopart.com/api/v3".to_string()
     });
 
+    let export_api_url = args.flag_export_api_url.unwrap_or_else(|| {
+        "http://localhost:8010".to_string()
+    });
+
     info!("BoM API is assigned to {}.", bom_api_url);
+    info!("export API is assigned to {}.", export_api_url);
 
     let bom_provider = BomProvider::new(bom_api_url, args.flag_bom_api_key);
 
@@ -242,21 +290,32 @@ fn main() {
         "Failed to connect to the database.",
     );
 
+    let schematic_provider = SchematicProvider::new(
+        host_address,
+        export_api_url,
+        "generated/schematic".to_string(),
+    );
+
     let mut router = Router::new();
 
-    setup_db_routers(&mut router, &database);
-    setup_bom_routers(&mut router, &bom_provider);
+    setup_db_routes(&mut router, &database);
+    setup_bom_routes(&mut router, &bom_provider);
+    setup_schematic_routes(&mut router, &schematic_provider, &database);
 
     let mut mount = Mount::new();
     mount.mount("/", router);
 
+    // Serve generated schematic files. File name is "{project-id}.fzz".
+    mount.mount(
+        "/schematic/generated/",
+        Static::new(Path::new("generated/schematic")),
+    );
+
     let mut chain = Chain::new(mount);
     chain.link_after(middleware::cors::CORSMiddleware);
 
-    let ip = args.flag_ip.unwrap_or_else(|| "0.0.0.0".to_string());
-    let port = args.flag_port.unwrap_or(8009);
-    info!("Running server at {}:{}", ip, port);
-    Iron::new(chain).http((ip.as_ref(), port)).unwrap();
+    info!("Running server at {}", host_address);
+    Iron::new(chain).http(host_address).unwrap();
 }
 
 

@@ -9,6 +9,7 @@ use hyper::error::UriError;
 use url;
 
 use serde_json;
+use zip;
 
 // Create the Error, ErrorKind, ResultExt, and Result types
 error_chain! {
@@ -25,12 +26,18 @@ error_chain! {
         Hyper(hyper::Error);
         HyperUri(UriError);
         Url(url::ParseError);
+        Zip(zip::result::ZipError);
     }
 
     errors {
         RouterArgumentIsNotProvided(argument_name: String) {
             description("Router argument is not provided")
             display("Router argument is not provided: '{}'", argument_name)
+        }
+
+        ProjectNotFound(argument_name: String) {
+            description("Project not found")
+            display("Project not found: '{}'", argument_name)
         }
     }
 }
