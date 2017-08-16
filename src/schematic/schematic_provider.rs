@@ -1,4 +1,4 @@
-use std::net::SocketAddr;
+use url::Url;
 use errors::Result;
 
 use projects::project::Project;
@@ -14,12 +14,12 @@ pub struct SchematicProvider {
 
 impl SchematicProvider {
     pub fn new<T: Into<String>>(
-        host_address: SocketAddr,
-        export_api_url: T,
+        schematic_base_url: Url,
+        export_api_url: Url,
         generated_content_folder: T,
     ) -> Self {
         SchematicProvider {
-            exporter: Exporter::new(host_address, export_api_url),
+            exporter: Exporter::new(schematic_base_url, export_api_url),
             generator: Generator::new(generated_content_folder),
         }
     }
@@ -27,6 +27,8 @@ impl SchematicProvider {
     /// Gets schematic (byte array for the schematic image) for the project.
     pub fn get(&self, project: Project) -> Result<Vec<u8>> {
         let path = self.generator.generate_sketch(project)?;
+
+        info!("Sketch generated: {:?}", path);
 
         self.exporter.export_sketch_to_svg(path)
     }

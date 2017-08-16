@@ -56,6 +56,7 @@ use errors::{Error, ErrorKind, Result};
 use bom::bom_provider::BomProvider;
 use schematic::schematic_provider::SchematicProvider;
 
+use url::Url;
 use url::percent_encoding::percent_decode;
 
 const USAGE: &'static str = "
@@ -235,6 +236,9 @@ fn setup_schematic_routes(
                 get_router_argument(request, "project-id"),
                 status::BadRequest
             );
+
+            info!("Retrieving project: {}", project_id);
+
             let project = db.get_project(&project_id)?;
 
             let project = project.ok_or_else(|| {
@@ -265,12 +269,13 @@ fn main() {
         "http://octopart.com/api/v3".to_string()
     });
 
-    let export_api_url = args.flag_export_api_url.unwrap_or_else(|| {
-        "http://localhost:8010".to_string()
-    });
+    let export_api_url = args.flag_export_api_url
+        .or_else(|| Some("http://localhost:8010".to_string()))
+        .and_then(|url_string| Url::parse(&url_string).ok())
+        .unwrap();
 
-    info!("BoM API is assigned to {}.", bom_api_url);
-    info!("export API is assigned to {}.", export_api_url);
+    info!("BOM API is assigned to {}.", bom_api_url);
+    info!("Export API is assigned to {}.", export_api_url);
 
     let bom_provider = BomProvider::new(bom_api_url, args.flag_bom_api_key);
 
@@ -290,8 +295,17 @@ fn main() {
         "Failed to connect to the database.",
     );
 
+    let generated_schematic_fragment = "/schematic/generated/";
+
     let schematic_provider = SchematicProvider::new(
-        host_address,
+        Url::parse(
+            format!(
+                "http://{}:{}{}",
+                host_address.ip(),
+                host_address.port(),
+                generated_schematic_fragment
+            ).as_ref(),
+        ).unwrap(),
         export_api_url,
         "generated/schematic".to_string(),
     );
@@ -307,7 +321,7 @@ fn main() {
 
     // Serve generated schematic files. File name is "{project-id}.fzz".
     mount.mount(
-        "/schematic/generated/",
+        generated_schematic_fragment,
         Static::new(Path::new("generated/schematic")),
     );
 

@@ -1,26 +1,37 @@
 use std;
 use std::io::prelude::*;
 use std::io::Cursor;
-use std::net::SocketAddr;
 use std::path::PathBuf;
-use url::Url;
-use errors::{Error, Result};
+
 use futures::{future, Future, Stream};
 use hyper::{Error as HyperError, Client};
 use tokio_core::reactor::Core;
+use url::Url;
 use zip;
 
+use errors::{Error, Result};
+
+/// Exporter is responsible for exporting of Fritzing sketches to a list of SVG files.
 #[derive(Clone)]
 pub struct Exporter {
-    host_address: SocketAddr,
-    api_url: String,
+    /// Base portion of the URL pointing to generated schematic sketches. It's used to
+    /// construct full schematic download URL used by Fritzing server.
+    schematic_base_url: Url,
+    /// URL of the Fritzing server that will do the sketch-to-svg export.
+    api_url: Url,
 }
 
 impl Exporter {
-    pub fn new<T: Into<String>>(host_address: SocketAddr, api_url: T) -> Self {
+    /// Returns a ready exporter instance.
+    ///
+    /// # Arguments
+    ///
+    /// * `schematic_base_url` - Base portion of the URL pointing to generated schematic sketches.
+    /// * `api_url` - Address of the Fritzing server.
+    pub fn new(schematic_base_url: Url, api_url: Url) -> Self {
         Exporter {
-            host_address: host_address,
-            api_url: api_url.into(),
+            schematic_base_url: schematic_base_url,
+            api_url: api_url,
         }
     }
 
@@ -34,14 +45,16 @@ impl Exporter {
         let mut zip = zip::ZipArchive::new(reader)?;
         let breadboard_image = zip.by_name(&format!("{}_breadboard.svg", project_id))?;
 
-        Ok(breadboard_image.bytes().collect::<std::io::Result<Vec<u8>>>()?)
+        Ok(breadboard_image
+            .bytes()
+            .collect::<std::io::Result<Vec<u8>>>()?)
     }
 
     fn download_export_archive(&self, file_name: &str) -> Result<Vec<u8>> {
         let url = Url::parse(&format!(
-            "{}/svg-tcp/http://{}/schematic/generated/{}",
-            &self.api_url,
-            self.host_address,
+            "{}/svg-tcp/{}{}",
+            &self.api_url.as_str(),
+            self.schematic_base_url.as_str(),
             file_name
         ))?;
 
