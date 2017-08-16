@@ -1,11 +1,12 @@
-use errors::{Error, Result};
-use futures::{future, Future, Stream};
-use hyper::{Error as HyperError, Client};
-use tokio_core::reactor::Core;
-use serde_json;
-use url::Url;
 use std::collections::HashMap;
 
+use futures::{future, Future, Stream};
+use hyper::{Error as HyperError, Client};
+use serde_json;
+use tokio_core::reactor::Core;
+use url::Url;
+
+use errors::{Error, Result};
 use super::octopart::part::Part;
 use super::octopart::parts_match_request::PartsMatchRequest;
 use super::octopart::parts_match_query::PartsMatchQuery;
@@ -14,14 +15,14 @@ use super::octopart::parts_match_response::PartsMatchResponse;
 /// Manages access to BOM related information.
 #[derive(Clone)]
 pub struct BomProvider {
-    api_url: String,
+    api_url: Url,
     api_key: String,
 }
 
 impl BomProvider {
-    pub fn new<T: Into<String>>(api_url: T, api_key: T) -> Self {
+    pub fn new<T: Into<String>>(api_url: Url, api_key: T) -> Self {
         BomProvider {
-            api_url: api_url.into(),
+            api_url: api_url,
             api_key: api_key.into(),
         }
     }
@@ -29,7 +30,7 @@ impl BomProvider {
     /// Returns Part information by it's `uid`.
     pub fn get_part<T: Into<String>>(&self, uid: T) -> Result<Part> {
         let url = Url::parse_with_params(
-            &format!("{}/parts/{}", &self.api_url, uid.into()),
+            &format!("{}/parts/{}", &self.api_url.as_str(), uid.into()),
             &[
                 ("apikey", self.api_key.as_ref()),
                 ("slice[offers]", "[0:1]"),
@@ -81,7 +82,7 @@ impl BomProvider {
         let mut core = Core::new()?;
         let client = Client::new(&core.handle());
 
-        let work = client.get(url.into_string().parse()?).and_then(|res| {
+        let work = client.get(url.as_str().parse()?).and_then(|res| {
             res.body()
                 .fold(Vec::new(), |mut v: Vec<u8>, chunk| {
                     v.extend(&chunk[..]);

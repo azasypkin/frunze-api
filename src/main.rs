@@ -265,9 +265,10 @@ fn main() {
     let port = args.flag_port.unwrap_or(8009);
     let host_address: SocketAddr = SocketAddr::new(IpAddr::V4(ip.parse().unwrap()), port);
 
-    let bom_api_url = args.flag_bom_api_url.unwrap_or_else(|| {
-        "http://octopart.com/api/v3".to_string()
-    });
+    let bom_api_url = args.flag_bom_api_url
+        .or_else(|| Some("http://octopart.com/api/v3".to_string()))
+        .and_then(|url_string| Url::parse(&url_string).ok())
+        .unwrap();
 
     let export_api_url = args.flag_export_api_url
         .or_else(|| Some("http://localhost:8010".to_string()))
