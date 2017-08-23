@@ -13,6 +13,16 @@ __Frunze API Server__ is API server written in Rust that relies on MongoDB datab
 
 To setup database please follow the instructions from [Frunze repository](https://github.com/azasypkin/frunze/blob/master/README.md#database).
 
+### Bill of Materials API
+
+To estimate the price of your project, we should gather real-time offers for every project hardware component from the 
+distributors (DigiKey, Mouser etc.) and we leverage [Octopart](https://octopart.com/) for that. That means you should
+supply `--bom-api-key xxxxxx` command line argument with the proper [Octopart API Key](https://octopart.com/api/home). 
+
+### Schematic Export API
+
+To locally deploy Schematic Export API please follow the instructions from [Frunze repository](https://github.com/azasypkin/frunze/blob/master/README.md#frunze).
+
 ### Run Server
 
 Run development API server with (localhost:8009 by default):
