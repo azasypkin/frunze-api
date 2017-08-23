@@ -5,7 +5,7 @@ authors = ["Aleh Zasypkin <aleh.zasypkin@gmail.com>"]
 
 [dependencies]
 bson = "0.9.0"
-clippy = {version = "0.0.151", optional = true}
+clippy = {version = "0.0.153", optional = true}
 docopt = "0.8.1"
 env_logger = "0.4.3"
 error-chain = "0.10.0"
@@ -15,7 +15,7 @@ hyper = "0.11.2"
 tokio-core = "0.1.9"
 log = "0.3.8"
 mount = "0.3.0"
-mongodb = "0.3.2"
+mongodb = "0.3.3"
 router = "0.5.1"
 serde = "1.0.11"
 serde_derive = "1.0.11"
@@ -24,7 +24,7 @@ staticfile = "0.4.0"
 unicase = "1.4.2"
 url = "1.5.1"
 uuid = { version = "0.5.1", features = ["v4"] }
-zip = "0.2.5"
+zip = "0.2.6"
 
 [dev-dependencies]
 stainless = "0.1.11"
