@@ -216,7 +216,7 @@ fn setup_bom_routes(router: &mut Router, bom_provider: &BomProvider) {
         "/bom/parts/:mpn",
         move |request: &mut Request| {
             let mpn = itry!(get_router_argument(request, "mpn"), status::BadRequest);
-            json_handler(request, || bom.find_parts(mpn.split(",").collect()))
+            json_handler(request, || bom.find_parts(mpn.split(',').collect()))
         },
         "bom-find-parts",
     );
@@ -281,7 +281,7 @@ fn main() {
     let bom_provider = BomProvider::new(bom_api_url, args.flag_bom_api_key);
 
     let db_ip = args.flag_db_ip.unwrap_or_else(|| "0.0.0.0".to_string());
-    let db_port = args.flag_db_port.unwrap_or(27017);
+    let db_port = args.flag_db_port.unwrap_or(27_017);
     let db_name = args.flag_db_name.unwrap_or_else(|| "frunze".to_string());
 
     info!(

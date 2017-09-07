@@ -69,7 +69,7 @@ impl BomProvider {
                     query.mpn.as_ref().map(|s| s.to_string())
                 });
                 (
-                    mpn_at_index.unwrap_or("unknown".to_string()),
+                    mpn_at_index.unwrap_or_else(|| "unknown".to_string()),
                     result.items.drain(..).last(),
                 )
             })
