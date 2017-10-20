@@ -1,4 +1,4 @@
-/// See https://octopart.com/api/docs/v3/rest-api#response-schemas-partsmatchquery.
+/// See [Octopart docs](https://octopart.com/api/docs/v3/rest-api#response-schemas-partsmatchquery).
 #[derive(Serialize, Deserialize, Debug)]
 pub struct PartsMatchQuery {
     /// Free-form keyword query.
