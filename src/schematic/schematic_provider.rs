@@ -43,6 +43,6 @@ impl SchematicProvider {
 
         info!("Sketch generated and stored at {:?}", path);
 
-        self.exporter.export_sketch_to_svg(path)
+        self.exporter.export_sketch_to_svg(&path)
     }
 }

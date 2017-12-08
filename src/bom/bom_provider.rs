@@ -37,7 +37,7 @@ impl BomProvider {
             ],
         )?;
 
-        Ok(serde_json::from_str(&BomProvider::get(url)?)?)
+        Ok(serde_json::from_str(&BomProvider::get(&url)?)?)
     }
 
     pub fn find_parts<T: Into<String>>(
@@ -59,7 +59,7 @@ impl BomProvider {
             ],
         )?;
 
-        let response: PartsMatchResponse = serde_json::from_str(&BomProvider::get(url)?)?;
+        let response: PartsMatchResponse = serde_json::from_str(&BomProvider::get(&url)?)?;
         let result_map = response
             .results
             .into_iter()
@@ -78,7 +78,7 @@ impl BomProvider {
         Ok(result_map)
     }
 
-    fn get(url: Url) -> Result<String> {
+    fn get(url: &Url) -> Result<String> {
         let mut core = Core::new()?;
         let client = Client::new(&core.handle());
 

@@ -59,7 +59,7 @@ use schematic::schematic_provider::SchematicProvider;
 use url::Url;
 use url::percent_encoding::percent_decode;
 
-const USAGE: &'static str = "
+const USAGE: &str = "
 Usage: frunze_api [--verbose] [--ip=<address>] [--port=<port>] [--db-ip=<address>]
                   [--db-port=<port>] [--db-name=<name>] [--bom-api-url=<url>]
                   [--bom-api-key=<key>] [--export-api-url=<url>]

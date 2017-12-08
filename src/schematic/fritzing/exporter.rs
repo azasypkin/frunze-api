@@ -39,7 +39,7 @@ impl Exporter {
     /// # Arguments
     ///
     /// * `sketch_path` - Path to the generated sketch file.
-    pub fn export_sketch_to_svg(&self, sketch_path: PathBuf) -> Result<Vec<u8>> {
+    pub fn export_sketch_to_svg(&self, sketch_path: &PathBuf) -> Result<Vec<u8>> {
         // We control file name (it's UUID) so it should be a valid Unicode string.
         let file_name = sketch_path.file_name().unwrap().to_string_lossy();
         let file_stem = sketch_path.file_stem().unwrap().to_string_lossy();
