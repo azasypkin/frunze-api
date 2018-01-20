@@ -255,7 +255,7 @@ fn setup_schematic_routes(
 }
 
 fn main() {
-    env_logger::init().unwrap();
+    env_logger::init();
 
     let args: Args = Docopt::new(USAGE)
         .and_then(|d| d.deserialize())
