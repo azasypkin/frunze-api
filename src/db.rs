@@ -36,10 +36,8 @@ impl DB {
     pub fn get_project(&self, project_id: &str) -> Result<Option<Project>> {
         let db = self.client.as_ref().unwrap().db(&self.name);
 
-        let result = db.collection("projects").find_one(
-            Some(doc! { "id" => project_id }),
-            None,
-        )?;
+        let result = db.collection("projects")
+            .find_one(Some(doc! { "id" => project_id }), None)?;
         let result = if let Some(project) = result {
             Some(bson::from_bson(bson::Bson::Document(project))?)
         } else {
@@ -53,10 +51,8 @@ impl DB {
     pub fn delete_project(&self, project_id: &str) -> Result<()> {
         let db = self.client.as_ref().unwrap().db(&self.name);
 
-        let result = db.collection("projects").delete_one(
-            doc! { "id" => project_id },
-            None,
-        )?;
+        let result = db.collection("projects")
+            .delete_one(doc! { "id" => project_id }, None)?;
 
         if let Some(write_exception) = result.write_exception {
             return Err(Error::WriteError(write_exception).into());
@@ -85,13 +81,8 @@ impl DB {
                 collection.insert_one(document, None)?;
             } else {
                 let project_id = &project.id;
-                collection.replace_one(
-                    doc! { "id" => project_id },
-                    document,
-                    None,
-                )?;
+                collection.replace_one(doc! { "id" => project_id }, document, None)?;
             }
-
         }
 
         Ok(project)

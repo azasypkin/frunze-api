@@ -1,7 +1,7 @@
 use std::collections::HashMap;
 
 use futures::{future, Future, Stream};
-use hyper::{Error as HyperError, Client};
+use hyper::{Client, Error as HyperError};
 use serde_json;
 use tokio_core::reactor::Core;
 use url::Url;
@@ -65,9 +65,10 @@ impl BomProvider {
             .into_iter()
             .enumerate()
             .map(|(index, mut result)| {
-                let mpn_at_index = request.queries.get(index).and_then(|query| {
-                    query.mpn.as_ref().map(|s| s.to_string())
-                });
+                let mpn_at_index = request
+                    .queries
+                    .get(index)
+                    .and_then(|query| query.mpn.as_ref().map(|s| s.to_string()));
                 (
                     mpn_at_index.unwrap_or_else(|| "unknown".to_string()),
                     result.items.drain(..).last(),

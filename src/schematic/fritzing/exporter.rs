@@ -3,7 +3,7 @@ use std::io::prelude::*;
 use std::path::PathBuf;
 
 use futures::{future, Future, Stream};
-use hyper::{Error as HyperError, Client};
+use hyper::{Client, Error as HyperError};
 use tokio_core::reactor::Core;
 use url::Url;
 use zip;
@@ -48,9 +48,7 @@ impl Exporter {
 
         let mut zip_archive = zip::ZipArchive::new(io::Cursor::new(downloaded_archive))?;
 
-        let breadboard_image = zip_archive.by_name(
-            &format!("{}_breadboard.svg", file_stem),
-        )?;
+        let breadboard_image = zip_archive.by_name(&format!("{}_breadboard.svg", file_stem))?;
 
         breadboard_image
             .bytes()

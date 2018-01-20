@@ -2,7 +2,6 @@
 #![cfg_attr(test, plugin(stainless))]
 #![cfg_attr(feature = "clippy", feature(plugin))]
 #![cfg_attr(feature = "clippy", plugin(clippy))]
-
 #![recursion_limit = "1024"]
 
 #[macro_use(bson, doc)]
@@ -11,27 +10,27 @@ extern crate docopt;
 extern crate env_logger;
 #[macro_use]
 extern crate error_chain;
-extern crate mongodb;
-extern crate mount;
 extern crate futures;
 extern crate hyper;
-extern crate tokio_core;
 #[macro_use]
 extern crate iron;
 #[macro_use]
 extern crate log;
+extern crate mongodb;
+extern crate mount;
 extern crate router;
 extern crate serde;
 #[macro_use]
 extern crate serde_derive;
 extern crate serde_json;
 extern crate staticfile;
+extern crate tokio_core;
 extern crate unicase;
 extern crate url;
 extern crate uuid;
 extern crate zip;
 
-use std::net::{SocketAddr, IpAddr};
+use std::net::{IpAddr, SocketAddr};
 use std::path::Path;
 
 mod middleware;
@@ -47,7 +46,7 @@ use db::DB;
 
 use docopt::Docopt;
 
-use iron::{Chain, mime, status};
+use iron::{mime, status, Chain};
 use iron::prelude::*;
 use mount::Mount;
 use router::Router;
@@ -102,11 +101,8 @@ where
         mime::SubLevel::Json,
         vec![(mime::Attr::Charset, mime::Value::Utf8)],
     );
-    let response_body = serde_json::to_string(&content_retriever()?).map_err(
-        |e| -> Error {
-            e.into()
-        },
-    )?;
+    let response_body =
+        serde_json::to_string(&content_retriever()?).map_err(|e| -> Error { e.into() })?;
 
     Ok(Response::with((content_type, status::Ok, response_body)))
 }
@@ -118,9 +114,7 @@ fn get_router_argument(request: &Request, argument_name: &str) -> Result<String>
         .and_then(|router| router.find(argument_name))
         .and_then(|arg| percent_decode(arg.as_bytes()).decode_utf8().ok())
         .map(|arg| arg.to_string())
-        .ok_or_else(|| {
-            ErrorKind::RouterArgumentIsNotProvided(argument_name.to_string()).into()
-        })
+        .ok_or_else(|| ErrorKind::RouterArgumentIsNotProvided(argument_name.to_string()).into())
 }
 
 fn setup_db_routes(router: &mut Router, database: &DB) {
@@ -166,17 +160,21 @@ fn setup_db_routes(router: &mut Router, database: &DB) {
     );
 
     let db = database.clone();
-    router.post("/project", move |request: &mut Request| -> IronResult<Response> {
-        let mut payload = String::new();
-        itry!(request.body.read_to_string(&mut payload));
+    router.post(
+        "/project",
+        move |request: &mut Request| -> IronResult<Response> {
+            let mut payload = String::new();
+            itry!(request.body.read_to_string(&mut payload));
 
-        // FIXME: Right now we have only POST method implemented, but later on this method should be
-        // used only for new projects, if we receive project with non-empty ID we should throw and
-        // recommend using PUT method, similar behavior should be implemented for PUT method.
-        let project = db.save_project(itry!(serde_json::from_str(&payload)))?;
+            // FIXME: Right now we have only POST method implemented, but later on this method should be
+            // used only for new projects, if we receive project with non-empty ID we should throw and
+            // recommend using PUT method, similar behavior should be implemented for PUT method.
+            let project = db.save_project(itry!(serde_json::from_str(&payload)))?;
 
-        Ok(Response::with((status::Ok, project.id)))
-    }, "project-set");
+            Ok(Response::with((status::Ok, project.id)))
+        },
+        "project-set",
+    );
 
     let db = database.clone();
     router.get(
@@ -286,15 +284,13 @@ fn main() {
 
     info!(
         "Connecting to the database `{}` at {}:{}...",
-        db_name,
-        db_ip,
-        db_port
+        db_name, db_ip, db_port
     );
 
     let mut database = DB::new(db_name);
-    database.connect(&db_ip, db_port).expect(
-        "Failed to connect to the database.",
-    );
+    database
+        .connect(&db_ip, db_port)
+        .expect("Failed to connect to the database.");
 
     let generated_schematic_fragment = "/schematic/generated/";
 
@@ -332,7 +328,6 @@ fn main() {
     info!("Running server at {}", host_address);
     Iron::new(chain).http(host_address).unwrap();
 }
-
 
 #[cfg(test)]
 describe! main {
