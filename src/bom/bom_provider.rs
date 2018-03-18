@@ -22,7 +22,7 @@ pub struct BomProvider {
 impl BomProvider {
     pub fn new<T: Into<String>>(api_url: Url, api_key: T) -> Self {
         BomProvider {
-            api_url: api_url,
+            api_url,
             api_key: api_key.into(),
         }
     }

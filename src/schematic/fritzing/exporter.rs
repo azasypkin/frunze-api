@@ -29,8 +29,8 @@ impl Exporter {
     /// * `api_url` - Address of the Fritzing server.
     pub fn new(schematic_base_url: Url, api_url: Url) -> Self {
         Exporter {
-            schematic_base_url: schematic_base_url,
-            api_url: api_url,
+            schematic_base_url,
+            api_url,
         }
     }
 
