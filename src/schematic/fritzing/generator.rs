@@ -1,6 +1,6 @@
 use std::path::PathBuf;
 
-use errors::Result;
+use failure::Error;
 use projects::project::Project;
 
 /// Generator is responsible for generation of Fritzing sketches based on the `Project`, its
@@ -29,7 +29,7 @@ impl Generator {
     /// # Arguments
     ///
     /// * `project` - Project instance to generate sketch for.
-    pub fn generate_sketch(&self, project: Project) -> Result<PathBuf> {
+    pub fn generate_sketch(&self, project: Project) -> Result<PathBuf, Error> {
         // TODO: Just temporarily rely on existing files and implement actual generation later.
         Ok(PathBuf::from(&self.output_folder_path)
             .with_file_name(project.id)

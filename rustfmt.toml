@@ -1,1 +1,2 @@
-write_mode = "overwrite"
+edition = "Edition2018"
+max_width = 100

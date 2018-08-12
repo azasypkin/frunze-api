@@ -1,2 +1,2 @@
-pub mod octopart;
 pub mod bom_provider;
+pub mod octopart;

@@ -1,16 +1,14 @@
 use std::collections::HashMap;
 
-use futures::{future, Future, Stream};
-use hyper::{Client, Error as HyperError};
-use serde_json;
-use tokio_core::reactor::Core;
-use url::Url;
-
-use errors::{Error, Result};
 use super::octopart::part::Part;
-use super::octopart::parts_match_request::PartsMatchRequest;
 use super::octopart::parts_match_query::PartsMatchQuery;
+use super::octopart::parts_match_request::PartsMatchRequest;
 use super::octopart::parts_match_response::PartsMatchResponse;
+use actix_web::{client, HttpMessage};
+use failure::Error;
+use futures::Future;
+use serde_json;
+use url::Url;
 
 /// Manages access to BOM related information.
 #[derive(Clone)]
@@ -27,8 +25,8 @@ impl BomProvider {
         }
     }
 
-    /// Returns Part information by it's `uid`.
-    pub fn get_part<T: Into<String>>(&self, uid: T) -> Result<Part> {
+    /// Returns Part information by its `uid`.
+    pub fn get_part<T: Into<String>>(&self, uid: T) -> Result<Part, Error> {
         let url = Url::parse_with_params(
             &format!("{}/parts/{}", &self.api_url.as_str(), uid.into()),
             &[
@@ -43,9 +41,10 @@ impl BomProvider {
     pub fn find_parts<T: Into<String>>(
         &self,
         mpns: Vec<T>,
-    ) -> Result<HashMap<String, Option<Part>>> {
+    ) -> Result<HashMap<String, Option<Part>>, Error> {
         let request = PartsMatchRequest {
-            queries: mpns.into_iter()
+            queries: mpns
+                .into_iter()
                 .map(|mpn| PartsMatchQuery::new().with_mpn(mpn).with_limit(1))
                 .collect(),
             exact_only: false,
@@ -73,28 +72,21 @@ impl BomProvider {
                     mpn_at_index.unwrap_or_else(|| "unknown".to_string()),
                     result.items.drain(..).last(),
                 )
-            })
-            .collect();
+            }).collect();
 
         Ok(result_map)
     }
 
-    fn get(url: &Url) -> Result<String> {
-        let mut core = Core::new()?;
-        let client = Client::new(&core.handle());
-
-        let work = client.get(url.as_str().parse()?).and_then(|res| {
-            res.body()
-                .fold(Vec::new(), |mut v: Vec<u8>, chunk| {
-                    v.extend(&chunk[..]);
-                    future::ok::<_, HyperError>(v)
-                })
-                .and_then(|chunks| {
-                    let s = String::from_utf8(chunks).unwrap();
-                    future::ok::<_, HyperError>(s)
-                })
-        });
-
-        core.run(work).map_err(|e| -> Error { e.into() })
+    fn get(url: &Url) -> Result<String, Error> {
+        client::get(url.as_str())
+            .finish()
+            .unwrap()
+            .send()
+            .map_err(|err| err.into())
+            .and_then(|res| {
+                res.body()
+                    .from_err()
+                    .and_then(|bytes| Ok(String::from_utf8(bytes.to_vec()).unwrap()))
+            }).wait()
     }
 }

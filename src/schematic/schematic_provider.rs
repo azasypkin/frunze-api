@@ -1,9 +1,9 @@
 use url::Url;
-use errors::Result;
 
-use projects::project::Project;
-use super::fritzing::generator::Generator;
 use super::fritzing::exporter::Exporter;
+use super::fritzing::generator::Generator;
+use failure::Error;
+use projects::project::Project;
 
 /// Manages access to the schematic related information.
 #[derive(Clone)]
@@ -38,7 +38,7 @@ impl SchematicProvider {
     /// # Arguments
     ///
     /// * `project` - Project to get schematic for.
-    pub fn get(&self, project: Project) -> Result<Vec<u8>> {
+    pub fn get(&self, project: Project) -> Result<Vec<u8>, Error> {
         let path = self.generator.generate_sketch(project)?;
 
         info!("Sketch generated and stored at {:?}", path);

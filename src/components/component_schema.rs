@@ -1,5 +1,5 @@
-use std::collections::HashMap;
 use components::component_property_schema::ComponentPropertySchema;
+use std::collections::HashMap;
 
 /// Describes component action.
 #[derive(Serialize, Deserialize, Debug)]
