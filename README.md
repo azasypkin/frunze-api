@@ -67,7 +67,7 @@ to use [`rustup`](https://rustup.rs) to deal with several Rust versions simultan
 just run:
 
 ```bash
-$ cargo +nightly test --features stainless
+$ cargo +nightly test
 ```
 
 ### Run Rust linter and source code formatter
