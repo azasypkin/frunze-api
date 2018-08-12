@@ -39,7 +39,6 @@ use bom::bom_provider::BomProvider;
 use db::DB;
 use docopt::Docopt;
 use failure::Error;
-use projects::project::Project;
 use schematic::schematic_provider::SchematicProvider;
 
 use url::Url;
@@ -168,31 +167,33 @@ fn setup_bom_routes(app: &mut CorsBuilder<AppState>) {
 fn setup_schematic_routes(app: &mut CorsBuilder<AppState>) {
     app.resource("/schematic/{id}", |r| {
         r.get().f(|req: &HttpRequest<AppState>| {
-            let project_id: String = match req.match_info().query("id") {
-                Err(_) => return HttpResponse::BadRequest().finish(),
-                Ok(project_id) => project_id,
-            };
-
-            let project: Project = match req.state().database.get_project(&project_id) {
-                Err(_) => return HttpResponse::InternalServerError().finish(),
-                Ok(project) => {
-                    if project.is_none() {
-                        return HttpResponse::NotFound()
-                            .body(format!("Project with id {} not found", project_id));
-                    }
-
-                    project.unwrap()
-                }
-            };
-
-            let data = match req.state().schematic_provider.get(project) {
-                Err(err) => return HttpResponse::InternalServerError().body(format!("{:?}", err)),
-                Ok(data) => data,
-            };
-
-            HttpResponse::Ok()
-                .content_type("image/svg+xml")
-                .body(Bytes::from(data))
+            req.match_info()
+                .query::<String>("id")
+                .map_err(|_| actix_web::error::ErrorBadRequest("Bad project id"))
+                .and_then(|project_id| {
+                    req.state()
+                        .database
+                        .get_project(&project_id)
+                        .map_err(|err| actix_web::error::ErrorInternalServerError(err))
+                        .and_then(|project| {
+                            project.ok_or_else(|| {
+                                info!("Project with id {} not found", project_id);
+                                actix_web::error::ErrorNotFound(format!(
+                                    "Project with id {} not found",
+                                    project_id
+                                ))
+                            })
+                        })
+                }).and_then(|project| {
+                    req.state()
+                        .schematic_provider
+                        .get(project)
+                        .map_err(|err| actix_web::error::ErrorInternalServerError(err))
+                }).and_then(|data| {
+                    Ok(HttpResponse::Ok()
+                        .content_type("image/svg+xml")
+                        .body(Bytes::from(data)))
+                })
         })
     });
 }
