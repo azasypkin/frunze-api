@@ -1,6 +1,3 @@
-#![cfg_attr(feature = "stainless", feature(plugin))]
-#![cfg_attr(test, plugin(stainless))]
-
 extern crate actix_web;
 extern crate bytes;
 #[macro_use(bson, doc)]
@@ -304,20 +301,19 @@ fn main() {
 }
 
 #[cfg(test)]
-describe! main {
-    describe! args {
-        it "should have default values" {
-            let args: super::super::Args = super::super::Docopt::new(USAGE)
-                .and_then(|d| d.deserialize())
-                .unwrap_or_else(|e| e.exit());
+mod tests {
+    #[test]
+    fn args_should_have_default_value() {
+        let args: super::Args = super::Docopt::new(super::USAGE)
+            .and_then(|d| d.deserialize())
+            .unwrap_or_else(|e| e.exit());
 
-            assert_eq!(args.flag_verbose, false);
-            assert_eq!(args.flag_ip, None);
-            assert_eq!(args.flag_port, None);
-            assert_eq!(args.flag_db_ip, None);
-            assert_eq!(args.flag_db_port, None);
-            assert_eq!(args.flag_db_name, None);
-            assert_eq!(args.flag_help, false);
-        }
+        assert_eq!(args.flag_verbose, false);
+        assert_eq!(args.flag_ip, None);
+        assert_eq!(args.flag_port, None);
+        assert_eq!(args.flag_db_ip, None);
+        assert_eq!(args.flag_db_port, None);
+        assert_eq!(args.flag_db_name, None);
+        assert_eq!(args.flag_help, false);
     }
 }

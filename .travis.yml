@@ -3,19 +3,19 @@ dist: trusty
 language: rust
 
 matrix:
-  allow_failures:
-    - rust: nightly
   include:
     - rust: stable
       script:
         - cargo build
+        - cargo test
     - rust: beta
       script:
         - cargo build
+        - cargo test
     - rust: nightly
       before_script:
         - rustup component add clippy-preview
       script:
         - cargo build
+        - cargo test
         - cargo clippy -- -D warnings
-        - cargo test --features stainless
