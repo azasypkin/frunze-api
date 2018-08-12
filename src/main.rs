@@ -174,8 +174,13 @@ fn setup_schematic_routes(app: &mut CorsBuilder<AppState>) {
                     req.state()
                         .database
                         .get_project(&project_id)
-                        .map_err(|err| actix_web::error::ErrorInternalServerError(err))
-                        .and_then(|project| {
+                        .map_err(|err| {
+                            error!(
+                                "Error occurred while retrieving project {}: {:?}",
+                                project_id, err
+                            );
+                            actix_web::error::ErrorInternalServerError(err)
+                        }).and_then(|project| {
                             project.ok_or_else(|| {
                                 info!("Project with id {} not found", project_id);
                                 actix_web::error::ErrorNotFound(format!(
@@ -185,10 +190,13 @@ fn setup_schematic_routes(app: &mut CorsBuilder<AppState>) {
                             })
                         })
                 }).and_then(|project| {
-                    req.state()
-                        .schematic_provider
-                        .get(project)
-                        .map_err(|err| actix_web::error::ErrorInternalServerError(err))
+                    req.state().schematic_provider.get(project).map_err(|err| {
+                        error!(
+                            "Error occurred while retrieving schematic for project: {:?}",
+                            err
+                        );
+                        actix_web::error::ErrorInternalServerError(err)
+                    })
                 }).and_then(|data| {
                     Ok(HttpResponse::Ok()
                         .content_type("image/svg+xml")
