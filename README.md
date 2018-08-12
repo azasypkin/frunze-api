@@ -37,6 +37,11 @@ or if you'd like to use custom IP address or/and port (don't forget to re-config
 $ cargo run -- --ip 127.0.0.2 --port 8008
 ```
 
+with Export API key:
+```bash
+$ RUST_LOG=frunze_api cargo run -- --bom-api-key xxxxxxxx
+```
+
 For custom MongoDB instance use the following parameters:
 
 ```bash
