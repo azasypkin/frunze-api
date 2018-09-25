@@ -4,18 +4,18 @@ version = "0.1.0"
 authors = ["Aleh Zasypkin <aleh.zasypkin@gmail.com>"]
 
 [dependencies]
-actix-web = "0.7.3"
-bson = "0.12.3"
-bytes = "0.4.9"
-docopt = "1.0.0"
-env_logger = "0.5.12"
+actix-web = "0.7.8"
+bson = "0.13.0"
+bytes = "0.4.10"
+docopt = "1.0.1"
+env_logger = "0.5.13"
 failure = "0.1.2"
-futures = "0.1.23"
-log = "0.4.4"
-mongodb = "0.3.10"
-serde = "1.0.71"
-serde_derive = "1.0.71"
-serde_json = "1.0.26"
+futures = "0.1.24"
+log = "0.4.5"
+mongodb = { git = "https://github.com/mongodb-labs/mongo-rust-driver-prototype" }
+serde = "1.0.79"
+serde_derive = "1.0.79"
+serde_json = "1.0.30"
 url = "1.7.1"
-uuid = { version = "0.6.5", features = ["v4"] }
+uuid = { version = "0.7.1", features = ["v4"] }
 zip = "0.4.2"
